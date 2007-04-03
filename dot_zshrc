@@ -166,6 +166,7 @@ bindkey '' vi-match-bracket        # ctrl 5
 bindkey '^[[8~' end-of-line          # home
 bindkey '^[[7~' beginning-of-line    # end
 bindkey '^k' kill-line
+bindkey "^?" backward-delete-char
 #  c-_ is undo
 
 #----------------------------------------------------
