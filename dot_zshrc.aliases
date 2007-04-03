@@ -96,3 +96,4 @@ if [ ${ZSH_VERSION//\./} -ge 420 ]; then
 fi
 
 
+# vim:ft=zsh
