@@ -25,15 +25,14 @@ alias p='ps -f'
 alias s='ssh'
 alias sortnr='sort -n -r'
 alias unexport='unset'
-alias u="unpacksh"
 
 alias whereami=display_info
 
 alias cd..='cd ..'
 alias ..='cd ..'
-alias cpd='cp -r'
+alias cpd='cp -rv'
 alias scpd='scp -r'
-alias rmd='rm -rf'
+alias rmd='rm -rvf'
 
 
 setenv() { typeset -x "${1}${1:+=}${(@)argv[2,$#]}" } 
@@ -49,6 +48,7 @@ case "$SH_OS" in
         ;;
 
     freebsd)
+        alias ls='ls -G'
         ;;
 
     openbsd)
