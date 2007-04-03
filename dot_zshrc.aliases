@@ -44,7 +44,7 @@ compdef _sudo +
 
 case "$SH_OS" in
 
-    linux )
+    linux | WIN32 )
         alias ls='ls -N -v --color=auto --show-control-chars'
         ;;
 
