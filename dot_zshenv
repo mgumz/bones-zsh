@@ -1,5 +1,7 @@
 #!/bin/sh
 
+export SHELL=/bin/zsh
+
 typeset -U PATH CDPATH MANPATH 
 
 [ -f ~/.profile ] && . ~/.profile

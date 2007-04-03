@@ -67,8 +67,15 @@ LOGCHECK=10
 # i cant handle octals :) but its the same as 077
 umask u=rwx,g=,o=
 
-# i am a developer, so i need cores :)
-limit coredumpsize 10M
+# platform stuff
+case "$SH_OS" in
+    WIN32)
+        ;;
+    *)
+        # i am a developer, so i need cores :)
+        limit coredumpsize 10M
+        ;;
+esac
 
 
 #--------------------------------------------------------#--
@@ -87,7 +94,7 @@ fi
 #--------------------------------------------------------#--
 # completion
 #--------------------------------------------------------#--
-autoload -U compinit && compinit
+autoload -U compinit && compinit -u
 compdef _man w3mman
 compdef _ssh ssh2
 
@@ -182,9 +189,6 @@ then
         fi
     fi
 fi
-
-# csh/tcsh style
-setenv() { typeset -x "${1}${1:+=}${(@)argv[2,$#]}" } 
 
 
 
