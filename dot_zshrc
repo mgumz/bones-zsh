@@ -1,0 +1,208 @@
+#------------------------------------------------------------------#--
+# my zsh-config ... coz zsh rox hell 
+#------------------------------------------------------------------#--
+
+
+: ${(A)_etc_hosts:=${(s: :)${(ps:\t:)${${(f)~~"$(</etc/hosts)"}%%\#*}##[:blank:]#[^[:blank:]]#}}}
+
+if [ -f ~/.ssh/known_hosts ]; then
+  _ssh_known_hosts=(${${${${(f)"$(<$HOME/.ssh/known_hosts)"}:# *}%%\ *}%%,*})
+else
+  _ssh_known_hosts=()
+fi
+
+if [ -f ~/.ssh/config ]; then
+  _ssh_config=( $(sed -n '/\*/d;/^Host/p;' ~/.ssh/config | awk '{ print $2 }'))
+else
+  _ssh_config=""
+fi
+
+hosts=(
+    "$_etc_hosts[@]"
+    "$_ssh_known_hosts[@]"
+    "$_ssh_config[@]"
+    localhost
+)
+
+typeset -U hosts
+
+#--------------------------------------------------------#--
+# options
+#--------------------------------------------------------#--
+setopt \
+    append_history \
+    autocd \
+    bang_hist \
+    beep \
+ no_bgnice \
+    correct \
+    extended_glob \
+    extended_history \
+    glob \
+    glob_complete \
+    glob_dots \
+    hist_no_store \
+    hist_save_no_dups \
+    hist_ignore_space \
+    hist_no_functions \
+    hist_reduce_blanks \
+ no_hup \
+    ksh_glob \
+    list_packed \
+    long_list_jobs \
+    mark_dirs \
+    notify \
+ no_prompt_cr \
+    promptcr \
+    share_history
+
+HISTFILE=$HOME/.zhistory
+HISTSIZE=1000
+SAVEHIST=1000
+WATCH=all
+WATCHFMT='%n %a %l from %m at %t.'
+LOGCHECK=10
+
+# umask is for permissions-of-new-files
+# i cant handle octals :) but its the same as 077
+umask u=rwx,g=,o=
+
+# i am a developer, so i need cores :)
+limit coredumpsize 10M
+
+
+#--------------------------------------------------------#--
+# load zsh-kungfoo
+#--------------------------------------------------------#--
+autoload colors && colors
+autoload select-word-style zmv zcalc
+
+# if you now paste a url it will be magically quoted!
+# but it only works on 4.2.0 and later.
+if [ ${ZSH_VERSION//\./} -ge 420 ]; then
+  autoload -U url-quote-magic
+  zle -N self-insert url-quote-magic
+fi
+
+#--------------------------------------------------------#--
+# completion
+#--------------------------------------------------------#--
+autoload -U compinit && compinit
+compdef _man w3mman
+compdef _ssh ssh2
+
+zstyle ':completion:*::::' completer _expand _complete _ignored #_approximate
+zstyle ':completion:*:expand:*' tag-order all-expansions
+
+zstyle '*' hosts $hosts
+
+zstyle ':completion:*:processes' command 'ps x -o pid,nice,pcpu,tt,args'
+zstyle ':completion:*' list-colors $LS_COLORS
+
+#--------------------------------------------------------#--
+# prompt
+#--------------------------------------------------------#--
+
+coff=$reset_color
+croot=$fg_bold[red]
+cname=$fg_bold[green]
+cjobs=$fg_bold[yellow]
+cerror=$fg_bold[magenta]
+chost=$fg_bold[cyan]
+ctime=$fg_bold[cyan]
+
+# a pretty complicated, 2line prompt with a lot of info
+# i replaced it with a simpler one and get the info by calling "di"
+#export PROMPT="z|%{%(!.$croot.$cname)%}%n%{$coff%}@%{$chost%}%m%{$coff%}\
+# | %d | %T\
+# | %(1j.[%{$cjobs%}%j%{$coff%}].)%(?..[%{$cerror%}%?%{$coff%}])
+#» "
+
+# thats the more simple prompt
+export PROMPT="%{%(!.$croot.$coff)%}%%%{$coff%} "
+# display jobs and last error on the right side of the prompt
+export RPROMPT="%(1j.[%{$cjobs%}%j%{$coff%}].)%(?..[%{$cerror%}%?%{$coff%}])"
+# display info
+display_info() {
+    if [ $UID != 0 ]; then
+        echo -n "${cname}$USER${coff}"
+    else
+        echo -n "${croot}$USER${coff}"
+    fi
+    echo "@${chost}$HOST${coff} | $PWD | `date +'%H:%M'` |"
+}
+
+alias di=display_info
+
+# set infos to the *terms
+chpwd() {
+    display_info
+    [[ -t 1 ]] || return
+    case "$TERM" in
+        *xterm*|*rxvt*) echo -en "\e]2;<$USER@$HOST>: $PWD\a";;
+        screen) [ -n $DISPLAY ] && echo -en "\e]2;<$USER@$HOST>: $PWD\a"
+        ;;
+    esac
+}
+
+case "$TERM" in
+  *xterm*|*rxvt*) echo -en "\e]2;<$USER@$HOST>: $PWD\a";;
+  screen) [ -n $DISPLAY ] && echo -en "\e]2;<$USER@$HOST>: $PWD\a";;
+esac
+
+
+#--------------------------------------------------------#--
+# keymapping
+#--------------------------------------------------------#--
+# press ctrl-v to get special keys (like 'home')
+zle -N select-word-style
+select-word-style bash
+bindkey -e
+#bindkey '\e^h' delete-backward-word  # alt - backspace
+bindkey ' ' magic-space              # history completion with space too
+bindkey '[D' emacs-backward-word     # alt-cursor-left
+bindkey '[C' emacs-forward-word      # alt-cursor-right
+bindkey '' vi-match-bracket        # ctrl 5
+bindkey '^[[8~' end-of-line          # home
+bindkey '^[[7~' beginning-of-line    # end
+bindkey '^k' kill-line
+#  c-_ is undo
+
+#----------------------------------------------------
+# keychain => http://www.gentoo.org/projects/keychain
+#----------------------------------------------------
+if [ `whoami` != 'root' ]
+then
+    if [ -f ~/.ssh/id_dsa -a -f ~/.ssh/id_dsa ]; then
+        if which keychain &> /dev/null
+        then
+            keychain -q id_dsa id_rsa
+            . ~/.keychain/${HOST}-sh
+        fi
+    fi
+fi
+
+# csh/tcsh style
+setenv() { typeset -x "${1}${1:+=}${(@)argv[2,$#]}" } 
+
+
+
+#-----------------
+# host-specifics
+#-----------------
+
+rcs=( 
+  ~/.zshrc.aliases 
+  ~/.zshrc.funcs 
+  ~/.zshrc.local
+)
+
+for rc in $rcs ; do
+  [ -f $rc ] && source $rc
+done
+true
+
+# now show the info
+display_info
+
+# vim:nowrap

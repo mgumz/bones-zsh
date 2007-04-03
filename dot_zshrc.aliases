@@ -1,0 +1,98 @@
+
+# global aliases, dont have to be at the beginning of
+# a line
+alias -g H='| head'
+alias -g T='| tail'
+alias -g G='| grep'
+alias -g L="| less"
+alias -g M="| most"
+alias -g LL="2>&1 | less"
+alias -g CA="2>&1 | cat -A"
+alias -g NE="2> /dev/null"
+alias -g NUL="> /dev/null 2>&1"
+
+# normal aliases
+alias ff="firefox NUL &!"
+alias psi="psi NUL &!"
+alias hgrep="fc -El 0 | grep"
+alias help='man'
+alias j='jobs'
+alias dn='disown'
+alias mm='mplayer -nosound'
+alias m='mplayer'
+alias n='$EDITOR $HOME/.notes'
+alias p='ps -f'
+alias s='ssh'
+alias sortnr='sort -n -r'
+alias unexport='unset'
+alias u="unpacksh"
+
+alias whereami=display_info
+
+alias cd..='cd ..'
+alias ..='cd ..'
+alias cpd='cp -r'
+alias scpd='scp -r'
+alias rmd='rm -rf'
+
+
+setenv() { typeset -x "${1}${1:+=}${(@)argv[2,$#]}" } 
+
+# shortcut for sudo
+function +() { PATH=$PATH:/usr/sbin:/sbin sudo env $@ }
+compdef _sudo +
+
+case "$SH_OS" in
+
+    linux )
+        alias ls='ls -N -v --color=auto --show-control-chars'
+        ;;
+
+    freebsd)
+        ;;
+
+    openbsd)
+        ;;  
+esac
+
+alias l='ls -1Fsh'
+alias ld='ls -ld *(-/DN)'
+alias ldot='ls -ld .*'
+alias ll='ls -lF'
+alias l1='ls -1F'
+alias lS='ls -1FSsh'
+alias lt='ls -1Ft'
+alias lrt='ls -1Fcrt'
+alias lart='ls -1Fcart'
+
+# cd + ls  ... and dont forget to add that to completion
+cdl() { cd $@; ls }
+compdef _cd cdl
+
+# zsh is able to auto-do some kungfoo
+# depends on the SUFFIX :)
+if [ ${ZSH_VERSION//\./} -ge 420 ]; then
+
+    # open browser on urls
+    _browser_fts=(htm html de org net com at cx nl se dk dk php)
+    for ft in $_browser_fts ; do alias -s $ft=$BROWSER ; done
+
+    _editor_fts=(cpp cxx cc c hh h inl asc txt TXT tex)
+    for ft in $_editor_fts ; do alias -s $ft=$EDITOR ; done
+
+    _image_fts=(jpg jpeg png gif mng tiff tif xpm)
+    for ft in $_image_fts ; do alias -s $ft=$XIVIEWER; done
+
+    _media_fts=(avi mpg mpeg ogm mp3 wav ogg ape rm mov mkv)
+    for ft in $_media_fts ; do alias -s $ft=mplayer ; done
+
+    #read documents
+    alias -s pdf=xpdf
+    alias -s ps=gv
+    alias -s dvi=xdvi
+    alias -s chm=xchm
+    alias -s djvu=djview
+
+fi
+
+
