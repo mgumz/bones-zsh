@@ -188,7 +188,7 @@ zliarc() {
             tar tvf $1;;
         *.tar.gz|*.tgz) 
             gzip -d -c $archive | tar tvf - ;;
-        *.tar.bz2|*.tbz | *.tb2 )
+        *.tar.bz2|*.tbz|*.tbz2|*.tb2)
             bzip2 -d -c $archive | tar tvf - ;;
         *.zip|*.pk3)
             unzip -l $archive ;;
