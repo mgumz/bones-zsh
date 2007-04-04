@@ -180,3 +180,12 @@ if [ ${ZSH_VERSION//\./} -ge 420 ]; then
     alias -s bz2='bzip2 -c -d'
     alias -s gz='gzip -c -d'
 fi
+
+# os stuff
+case "$SH_OS" in
+    freebsd)
+        pkg_chkupgrade() {
+            sudo portupgrade -ran 2> /dev/null | awk '/^[[:space:]]+[\+].*/ { print $0 }' | sort -r
+        }
+        ;;
+esac
