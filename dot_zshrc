@@ -181,7 +181,7 @@ bindkey "^?" backward-delete-char
 #----------------------------------------------------
 if [ `whoami` != 'root' ]
 then
-    if [ -f ~/.ssh/id_dsa -a -f ~/.ssh/id_dsa ]; then
+    if [ -f ~/.ssh/id_dsa -o -f ~/.ssh/id_rsa ]; then
         if which keychain &> /dev/null
         then
             keychain -q id_dsa id_rsa
