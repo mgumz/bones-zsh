@@ -1,4 +1,5 @@
-#!/bin/sh
+
+export ZSH_VERSION=${${ZSH_VERSION//\./}/-*/}
 
 typeset -U PATH CDPATH MANPATH 
 
@@ -22,4 +23,4 @@ do
     [ -f $rc ] && source $rc
 done
 
-
+# vim:ft=sh
