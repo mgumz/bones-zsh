@@ -137,6 +137,12 @@ display_info() {
         echo -n "${croot}$USER${coff}"
     fi
     echo "@${chost}$HOST${coff} | $PWD | `date +'%H:%M'` |"
+    case "$TERM" in
+        *xterm*|*rxvt*) echo -en "\e]2;<$USER@$HOST>: $PWD\a";;
+        screen) [ -n $DISPLAY ] && echo -en "\e]2;<$USER@$HOST>: $PWD\a"
+        ;;
+    esac
+
 }
 
 alias di=display_info
@@ -145,11 +151,6 @@ alias di=display_info
 chpwd() {
     display_info
     [[ -t 1 ]] || return
-    case "$TERM" in
-        *xterm*|*rxvt*) echo -en "\e]2;<$USER@$HOST>: $PWD\a";;
-        screen) [ -n $DISPLAY ] && echo -en "\e]2;<$USER@$HOST>: $PWD\a"
-        ;;
-    esac
 }
 
 case "$TERM" in
