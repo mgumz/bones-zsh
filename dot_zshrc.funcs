@@ -94,10 +94,28 @@ z_tarcp() {
     fi
 }
 
-# dict wordnet
-wn() {
-    dict -d wn $@
+z_ddiff() {
+
+    if [[ $# -lt 2 ]]; then
+        echo "usage: $0 dir1 dir2"
+        return 1
+    fi
+
+    tmp1="${TMP}/${0}_${$}_1"
+    tmp2="${TMP}/${0}_${$}_2"
+
+    chpwd() { }
+
+    ( cd "$1"; print -l **/* > "${tmp1}" )
+    ( cd "$2"; print -l **/* > "${tmp2}" )
+
+    diff -u "$tmp1" "$tmp2" | sed '1,3d'
+
+    rm -f "$tmp1" "$tmp2"
+
+
 }
+
 
 
 # unpacks a archive
