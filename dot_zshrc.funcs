@@ -109,11 +109,9 @@ z_ddiff() {
     ( cd "$1"; print -l **/* > "${tmp1}" )
     ( cd "$2"; print -l **/* > "${tmp2}" )
 
-    diff -u "$tmp1" "$tmp2" | sed '1,3d'
+    diff -u "$tmp1" "$tmp2" | sed '1,3d' | sed '/^[^-+]/d'
 
     rm -f "$tmp1" "$tmp2"
-
-
 }
 
 
