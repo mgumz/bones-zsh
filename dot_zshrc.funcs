@@ -203,5 +203,30 @@ case "$SH_OS" in
         pkg_chkupgrade() {
             sudo portupgrade -ran 2> /dev/null | awk '/^[[:space:]]+[\+].*/ { print $0 }' | sort -r
         }
+
+        geli_on() {
+            if [ $# -lt 1 ]; then
+                echo "$0 encfile"
+                return 1
+            fi
+
+            sudo -p "sudo pass" mdconfig -a -t vnode -f $1 -u 0
+            sudo -p "sudo pass" geli attach -k $1.key /dev/md0
+
+        }
+
+        geli_off() {
+            if [ $# -lt 1 ]; then
+                echo "$0 encfile"
+                return 1
+            fi
+
+            sudo -p "sudo pass" geli detach /dev/md0
+            sudo -p "sudo pass" mdconfig -d -u 0
+        }
+
+        port_search() {
+            make -C /usr/ports search name=$*
+        }
         ;;
 esac

@@ -1,0 +1,32 @@
+#!/bin/sh
+
+export PATH=$HOME/bin:/sbin:/usr/sbin:/usr/local/sbin:/usr/local/bin:$PATH
+export SH_OS=$(uname -s |tr '[:upper:]' '[:lower:]')
+
+# setup default apps
+if which favapps.sh &> /dev/null ; then
+  eval `favapps.sh`
+else
+  if [ -n "$DISPLAY" ] ; then
+    for e in gvim nedit gedit kate xedit ; do
+      if which $e &> /dev/null;then 
+        export EDITOR="$e"
+        break
+      fi
+    done
+  else
+    for e in vim nano vi pico; do
+      if which "$e" &> /dev/null ; then 
+        export EDITOR="$e"
+        break
+      fi
+    done
+  fi
+fi
+
+for p in ~/.profile.local ; do
+  [ -f $p ] && . $p
+done
+
+true
+
