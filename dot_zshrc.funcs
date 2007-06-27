@@ -210,8 +210,8 @@ case "$SH_OS" in
                 return 1
             fi
 
-            sudo -p "sudo pass" mdconfig -a -t vnode -f $1 -u 0
-            sudo -p "sudo pass" geli attach -k $1.key /dev/md0
+            sudo mdconfig -a -t vnode -f $1 -u 0
+            sudo geli attach -k $1.key /dev/md0
 
         }
 
@@ -221,8 +221,8 @@ case "$SH_OS" in
                 return 1
             fi
 
-            sudo -p "sudo pass" geli detach /dev/md0
-            sudo -p "sudo pass" mdconfig -d -u 0
+            sudo geli detach /dev/md0
+            sudo mdconfig -d -u 0
         }
 
         port_search() {
