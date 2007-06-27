@@ -5,7 +5,7 @@ typeset -U PATH CDPATH MANPATH
 
 [ -f ~/.profile ] && . ~/.profile
 
-export SUDO_PROMT="sudo pass: "
+export SUDO_PROMPT="sudo pass: "
 
 if which dircolors &> /dev/null; then
     if [ -f $HOME/.dir_colors -o -f /etc/DIR_COLORS ]; then
