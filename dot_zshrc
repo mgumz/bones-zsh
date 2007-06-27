@@ -1,5 +1,5 @@
 #------------------------------------------------------------------#--
-# my zsh-config ... coz zsh rox hell 
+# my zsh-config ... coz zsh rox hell
 #------------------------------------------------------------------#--
 
 
@@ -201,9 +201,9 @@ fi
 # host-specifics
 #-----------------
 
-rcs=( 
-  ~/.zshrc.aliases 
-  ~/.zshrc.funcs 
+rcs=(
+  ~/.zshrc.aliases
+  ~/.zshrc.funcs
   ~/.zshrc.local
 )
 
