@@ -2,21 +2,21 @@
 
 #colored messages
 
-sh_coloroff() { echo -en "$reset_color" }
-sh_colormsg() { [ -n "$1" ] && echo -en "${fg_bold[white]}${@}${reset_color}" }
+z_coloroff() { echo -en "$reset_color" }
+z_colormsg() { [ -n "$1" ] && echo -en "${fg_bold[white]}${@}${reset_color}" }
 
-sh_error() { echo -e "${fg_bold[red]}[ e ]${reset_color} $@" }
-sh_info() { echo -e "${fg_bold[yellow]}[ i ]${reset_color} $@" }
-sh_success() { echo -e "${fg_bold[green]}[ k ]${reset_color} $@" }
-sh_mesg() { echo -e "${fg_bold[cyan]}[ m ]${reset_color} $@" }
+z_error() { echo -e "${fg_bold[red]}[ e ]${reset_color} $@" }
+z_info() { echo -e "${fg_bold[yellow]}[ i ]${reset_color} $@" }
+z_success() { echo -e "${fg_bold[green]}[ k ]${reset_color} $@" }
+z_mesg() { echo -e "${fg_bold[cyan]}[ m ]${reset_color} $@" }
 
 # develop helpers
 alias z_indent='indent -nsaf -npcs -cli2 -i2 -lp -nprs -nsaw -nut -cbi2 -bli0 -bls -nbad -npsl'
 alias z_diff='diff -abBpur'
 
-alias sh_svnstat="svn status | awk '/^[^?]/'"
+alias z_svnstat="svn status | awk '/^[^?]/'"
 # use with   svn diff -r `sh_svnprev`
-sh_svnprev() { echo $(( `svnversion . | sed 's/[^0-9].*//'` - 1)) }
+z_svnprev() { echo $(( `svnversion . | sed 's/[^0-9].*//'` - 1)) }
 
 
 #
@@ -29,19 +29,19 @@ sh_svnprev() { echo $(( `svnversion . | sed 's/[^0-9].*//'` - 1)) }
 #
 # $1 - name of the profile (a must)
 # $2 - name of the profilefile (optional)
-sh_myprofile()
+z_myprofile()
 {
   f=$HOME/.myprofiles
   [ -n "$1" ] || return 1
   [ -n "$2" ] && f="$2"
-  sh_info "setting profiles to \"$1\" ... "
-  
+  z_info "setting profiles to \"$1\" ... "
+
   sed -n '/^#begin\['$1'\]/,/^#end\['$1'\]/p' "$f" |
   while read l
   do
     eval $l
   done
-  sh_success "done"
+  z_success "done"
 }
 
 alias z_dubigf='find . -size +10M -exec ls -1 "{}" ";"'
@@ -61,7 +61,7 @@ z_whoisonline() {
             return 1
         fi
         sh_info "testing $net for online boxes"
-        sudo nmap --system-dns -sP $net | awk '/Host/ && /up/ { print $0; }' 
+        sudo nmap --system-dns -sP $net | awk '/Host/ && /up/ { print $0; }'
         sh_success "done"
     fi
 }
@@ -84,7 +84,7 @@ z_tarcp() {
 
         # http://www.ivarch.com/programs/pv.shtml
         if which pv ; then
-            tar -c -f - ${@[1, -2]} | pv -t -b -r | tar -x -f - -C ${@[-1]} 
+            tar -c -f - ${@[1, -2]} | pv -t -b -r | tar -x -f - -C ${@[-1]}
         else
             tar -c -v -f - ${@[1, -2]} | tar -x -f - -C ${@[-1]}
         fi
@@ -120,9 +120,9 @@ z_ddiff() {
 z_unarc() {
     local archive=$1
     case $archive in
-        *.tar) 
+        *.tar)
             tar xvf $1;;
-        *.tar.gz|*.tgz) 
+        *.tar.gz|*.tgz)
             gzip -d -c $archive | tar xvf - ;;
         *.tar.bz2|*.tbz | *.tb2 )
             bzip2 -d -c $archive | tar xvf - ;;
@@ -138,16 +138,16 @@ z_unarc() {
             rzip -d $archive;;
         *.tar.rz)
             rzip -d $archive; tar xvf ${archive%.rz};;
-    esac   
+    esac
 }
 
 # list content of an archive
 z_liarc() {
     local archive=$1
     case $archive in
-        *.tar) 
+        *.tar)
             tar tvf $1;;
-        *.tar.gz|*.tgz) 
+        *.tar.gz|*.tgz)
             gzip -d -c $archive | tar tvf - ;;
         *.tar.bz2|*.tbz|*.tbz2|*.tb2)
             bzip2 -d -c $archive | tar tvf - ;;
