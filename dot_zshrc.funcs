@@ -60,9 +60,9 @@ z_whoisonline() {
             echo "missing net."
             return 1
         fi
-        sh_info "testing $net for online boxes"
+        z_info "testing $net for online boxes"
         sudo nmap --system-dns -sP $net | awk '/Host/ && /up/ { print $0; }'
-        sh_success "done"
+        z_success "done"
     fi
 }
 
