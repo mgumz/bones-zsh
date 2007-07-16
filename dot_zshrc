@@ -69,7 +69,7 @@ umask u=rwx,g=,o=
 
 # platform stuff
 case "$SH_OS" in
-    WIN32)
+    WIN32|cygwin*)
         ;;
     *)
         # i am a developer, so i need cores :)
