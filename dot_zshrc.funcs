@@ -19,6 +19,17 @@ alias z_svnstat="svn status | awk '/^[^?]/'"
 z_svnprev() { echo $(( `svnversion . | sed 's/[^0-9].*//'` - 1)) }
 
 
+z_hgdiff() {
+
+    if [ $# -lt 1 ]; then
+        echo "$0 file"
+        return
+    fi
+
+    hg cat $1 | vim - -c ":vert diffsplit $1" -c "map q :qa!<cr>"
+
+}
+
 #
 # change to a profile written down in $HOME/.myprofiles
 #
