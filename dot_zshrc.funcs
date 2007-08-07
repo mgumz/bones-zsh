@@ -83,7 +83,7 @@ z_tarcp() {
         echo "copy ${@[1, -2]} => ${@[-1]}"
 
         # http://www.ivarch.com/programs/pv.shtml
-        if which pv ; then
+        if which pv &> /dev/null ; then
             tar -c -f - ${@[1, -2]} | pv -t -b -r | tar -x -f - -C ${@[-1]}
         else
             tar -c -v -f - ${@[1, -2]} | tar -x -f - -C ${@[-1]}
