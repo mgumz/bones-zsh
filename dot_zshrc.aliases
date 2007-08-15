@@ -43,8 +43,9 @@ compdef _sudo +
 
 case "$SH_OS" in
 
-    linux | WIN32 )
+    linux | WIN32 | cygwin* )
         alias ls='ls -N -v --color=auto --show-control-chars'
+        alias grep='grep --color'
         ;;
 
     freebsd)
