@@ -1,7 +1,8 @@
+echo "$HOME/.zshrc"
+
 #------------------------------------------------------------------#--
 # my zsh-config ... coz zsh rox hell
 #------------------------------------------------------------------#--
-
 
 : ${(A)_etc_hosts:=${(s: :)${(ps:\t:)${${(f)~~"$(</etc/hosts)"}%%\#*}##[:blank:]#[^[:blank:]]#}}}
 
@@ -200,19 +201,11 @@ fi
 #-----------------
 # host-specifics
 #-----------------
-
-rcs=(
-  ~/.zshrc.aliases
-  ~/.zshrc.funcs
-  ~/.zshrc.local
-)
-
-for rc in $rcs ; do
-  [ -f $rc ] && source $rc
+for rc in ~/.zshrc.aliases ~/.zshrc.funcs ~/.zshrc.local ; do
+  [ ! -f $rc ] || source $rc
 done
-true
 
 # now show the info
 display_info
 
-# vim:nowrap
+# vim:nowrap:ft=zsh
