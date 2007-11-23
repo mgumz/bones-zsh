@@ -205,7 +205,4 @@ for rc in ~/.zshrc.aliases ~/.zshrc.funcs ~/.zshrc.local ; do
   [ ! -f $rc ] || source $rc
 done
 
-# now show the info
-display_info
-
 # vim:nowrap:ft=zsh

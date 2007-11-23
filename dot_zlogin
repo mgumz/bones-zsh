@@ -1,0 +1,5 @@
+echo "$HOME/.zlogin"
+
+display_info
+
+# vim:ft=zsh
