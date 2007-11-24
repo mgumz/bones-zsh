@@ -1,4 +1,4 @@
-echo "$HOME/.zprofile"
+echo -n " $HOME/.zprofile"
 
 export PATH=$HOME/bin:/sbin:/usr/sbin:/usr/local/sbin:/usr/local/bin:$PATH
 export SH_OS=$(uname -s |tr '[:upper:]' '[:lower:]')
@@ -37,3 +37,4 @@ else
   fi
 fi
 
+# vim:ft=zsh

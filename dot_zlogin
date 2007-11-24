@@ -1,4 +1,4 @@
-echo "$HOME/.zlogin"
+echo "> $HOME/.zlogin"
 
 display_info
 

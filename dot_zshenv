@@ -1,4 +1,4 @@
-echo "$HOME/.zshenv"
+echo -n "> $HOME/.zshenv"
 
 export ZSH_VERSION=${${ZSH_VERSION//\./}/-*/}
 

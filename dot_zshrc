@@ -1,4 +1,4 @@
-echo "$HOME/.zshrc"
+echo " $HOME/.zshrc"
 
 #------------------------------------------------------------------#--
 # my zsh-config ... coz zsh rox hell
