@@ -1,5 +1,3 @@
-echo -n "> $HOME/.zshenv"
-
 export ZSH_VERSION=${${ZSH_VERSION//\./}/-*/}
 
 typeset -U PATH CDPATH MANPATH
