@@ -3,6 +3,8 @@
 export PATH=$HOME/bin:/sbin:/usr/sbin:/usr/local/sbin:/usr/local/bin:$PATH
 export SH_OS=$(uname -s |tr '[:upper:]' '[:lower:]')
 
+export PYTHONSTARTUP=$HOME/.pythonrc
+
 # setup default apps
 if which favapps.sh &> /dev/null ; then
   eval `favapps.sh`
