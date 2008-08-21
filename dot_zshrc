@@ -34,6 +34,7 @@ setopt \
     bang_hist \
     beep \
  no_bgnice \
+    c_bases \
     correct \
     extended_glob \
     extended_history \
