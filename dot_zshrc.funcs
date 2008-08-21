@@ -131,12 +131,8 @@ z_ddiff() {
 z_unarc() {
     local archive=$1
     case $archive in
-        *.tar)
-            tar xvf $1;;
-        *.tar.gz|*.tgz)
-            gzip -d -c $archive | tar xvf - ;;
-        *.tar.bz2|*.tbz | *.tb2 )
-            bzip2 -d -c $archive | tar xvf - ;;
+        *.tar|*.tar.gz|*.tgz|*.tar.bz2|*.tbz)
+            tar xvaf $1;;
         *.zip|*.pk3)
             unzip $archive ;;
         *.rar)
@@ -156,12 +152,8 @@ z_unarc() {
 z_liarc() {
     local archive=$1
     case $archive in
-        *.tar)
-            tar tvf $1;;
-        *.tar.gz|*.tgz)
-            gzip -d -c $archive | tar tvf - ;;
-        *.tar.bz2|*.tbz|*.tbz2|*.tb2)
-            bzip2 -d -c $archive | tar tvf - ;;
+        *.tar|*.tar.gz|*.tgz|*.tar.bz2|*.tbz)
+            tar tavf $1;;
         *.zip|*.pk3)
             unzip -l $archive ;;
         *.rar)
@@ -192,6 +184,33 @@ z_aese() {
     eval $CMD
 }
 
+# print human readable numbers
+z_humanp() {
+    l=""
+    u=""
+    if (( $1 < 1000 )); then
+        print $1
+        return
+    elif (( $1 > 1000000000000 )); then
+        (( l = $1 / 1000 ))
+        (( l = ($l + 50000000) / 100000000 ))
+        u=T
+    elif (( $1 > 1000000000 )); then
+        (( l = $1 + 50000000 / 100000000 ))
+        u=G
+    elif (( $1 > 1000000 )); then
+        (( l = ($1 + 50000) / 100000 ))
+        u=M
+    else
+        (( l = ($1 + 50) / 100 ))
+        u=k
+    fi
+
+    (( b = $l / 10 ))
+    (( d = $l % 10 ))
+
+    print $b.$d$u
+}
 
 if [ ${ZSH_VERSION//\./} -ge 420 ]; then
     alias -s zip='unzip -l'
