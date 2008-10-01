@@ -30,6 +30,13 @@ z_hgdiff() {
 
 }
 
+z_diffstat() {
+    awk 'BEGIN { inserts=0; removals=0; } \
+         /^\+/ { inserts++; } \
+         /^-/ { removals++; } \
+         END { print "inserts ", inserts, " removals ", removals ; }'
+}
+
 #
 # change to a profile written down in $HOME/.myprofiles
 #
