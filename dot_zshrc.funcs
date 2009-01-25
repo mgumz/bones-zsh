@@ -160,7 +160,7 @@ z_liarc() {
     local archive=$1
     case $archive in
         *.tar|*.tar.gz|*.tgz|*.tar.bz2|*.tbz)
-            tar tavf $1;;
+            tar tvf $1;;
         *.zip|*.pk3)
             unzip -l $archive ;;
         *.rar)
@@ -224,7 +224,7 @@ if [ ${ZSH_VERSION//\./} -ge 420 ]; then
     alias -s pk3='unzip -l'
     alias -s rar='unrar l'
     alias -s tar='tar tf'
-    alias -s tar.gz='echo '
+    alias -s tar.gz='tar tf'
     alias -s ace='unace l'
     alias -s rpm='rpm -l'
     alias -s o='nm'
