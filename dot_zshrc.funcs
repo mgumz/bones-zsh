@@ -139,7 +139,7 @@ z_unarc() {
     local archive=$1
     case $archive in
         *.tar|*.tar.gz|*.tgz|*.tar.bz2|*.tbz)
-            tar xvaf $1;;
+            tar xvf $1;;
         *.zip|*.pk3)
             unzip $archive ;;
         *.rar)
