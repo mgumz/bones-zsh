@@ -71,6 +71,9 @@ alias lart='ls -1Fcart'
 cdl() { cd $@; ls }
 compdef _cd cdl
 
+function ++() { pushd "$@" }
+function --() { popd }
+
 # zsh is able to auto-do some kungfoo
 # depends on the SUFFIX :)
 if [ ${ZSH_VERSION//\./} -ge 420 ]; then
