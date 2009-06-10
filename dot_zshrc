@@ -52,7 +52,6 @@ setopt \
     long_list_jobs \
     mark_dirs \
     notify \
- no_prompt_cr \
     promptcr \
     share_history
 
