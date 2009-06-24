@@ -179,7 +179,7 @@ bindkey "^?" backward-delete-char
 #----------------------------------------------------
 # keychain => http://www.gentoo.org/projects/keychain
 #----------------------------------------------------
-if [ x"$USER" != x"root" ]
+if [ x"$USERNAME" != x"root" ]
 then
     keys=""
     [ ! -f ~/.ssh/id_dsa ] || keys="~/.ssh/id_dsa "
