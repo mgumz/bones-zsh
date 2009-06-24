@@ -10,10 +10,10 @@ else
   _ssh_known_hosts=()
 fi
 
+
+_ssh_config=""
 if [ -f ~/.ssh/config ]; then
-  _ssh_config=( $(sed -n '/\*/d;/^Host/p;' ~/.ssh/config | awk '{ print $2 }'))
-else
-  _ssh_config=""
+  _ssh_config=( $(awk '/^Host/ { print $2 }' ~/.ssh/config))
 fi
 
 hosts=(
@@ -179,7 +179,7 @@ bindkey "^?" backward-delete-char
 #----------------------------------------------------
 # keychain => http://www.gentoo.org/projects/keychain
 #----------------------------------------------------
-if [ `whoami` != 'root' ]
+if [ x"$USER" != x"root" ]
 then
     keys=""
     [ ! -f ~/.ssh/id_dsa ] || keys="~/.ssh/id_dsa "
