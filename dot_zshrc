@@ -82,6 +82,7 @@ esac
 #--------------------------------------------------------#--
 autoload colors && colors
 autoload select-word-style zmv zcalc
+autoload zsh/parameter
 
 # if you now paste a url it will be magically quoted!
 # but it only works on 4.2.0 and later.
@@ -138,10 +139,7 @@ display_info() {
     fi
     echo -n "@${chost}$HOST${coff} "
 
-    IFS=^M
-    local JOBS
-    JOBS=(`jobs`)
-    [ ${#JOBS} -lt 1 ] || echo -n "| ${cjobs}${#JOBS}${coff} "
+    [ ${#jobtexts} -eq 0 ] || echo -n "| ${cjobs}${#jobtexts}${coff} "
 
     echo "| $PWD | `date +'%H:%M'` |"
     case "$TERM" in
