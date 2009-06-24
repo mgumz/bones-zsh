@@ -125,9 +125,9 @@ ctime=$fg_bold[cyan]
 #» "
 
 # thats the more simple prompt
-export PROMPT="%{%(!.$croot.$coff)%}%%%{$coff%} "
+export PROMPT="%(1j.[%{$cjobs%}%j%{$coff%}].)%(?..[%{$cerror%}%?%{$coff%}])%{%(!.$croot.$coff)%}%%%{$coff%} "
 # display jobs and last error on the right side of the prompt
-export RPROMPT="%(1j.[%{$cjobs%}%j%{$coff%}].)%(?..[%{$cerror%}%?%{$coff%}])"
+#export RPROMPT="%(1j.[%{$cjobs%}%j%{$coff%}].)%(?..[%{$cerror%}%?%{$coff%}])"
 # display info
 display_info() {
     if [ $UID != 0 ]; then
