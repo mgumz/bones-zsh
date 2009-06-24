@@ -125,20 +125,28 @@ ctime=$fg_bold[cyan]
 #» "
 
 # thats the more simple prompt
-export PROMPT="%(1j.[%{$cjobs%}%j%{$coff%}].)%(?..[%{$cerror%}%?%{$coff%}])%{%(!.$croot.$coff)%}%%%{$coff%} "
+export PROMPT="%(?..[%{$cerror%}%?%{$coff%}])%{%(!.$croot.$coff)%}%%%{$coff%} "
 # display jobs and last error on the right side of the prompt
 #export RPROMPT="%(1j.[%{$cjobs%}%j%{$coff%}].)%(?..[%{$cerror%}%?%{$coff%}])"
 # display info
 display_info() {
+
     if [ $UID != 0 ]; then
-        echo -n "${cname}$USER${coff}"
+        echo -n "${cname}$USERNAME${coff}"
     else
-        echo -n "${croot}$USER${coff}"
+        echo -n "${croot}$USERNAME${coff}"
     fi
-    echo "@${chost}$HOST${coff} | $PWD | `date +'%H:%M'` |"
+    echo -n "@${chost}$HOST${coff} "
+
+    IFS=^M
+    local JOBS
+    JOBS=(`jobs`)
+    [ ${#JOBS} -lt 1 ] || echo -n "| ${cjobs}${#JOBS}${coff} "
+
+    echo "| $PWD | `date +'%H:%M'` |"
     case "$TERM" in
-        *xterm*|*rxvt*) echo -en "\e]2;<$USER@$HOST>: $PWD\a";;
-        screen) [ -n $DISPLAY ] && echo -en "\e]2;<$USER@$HOST>: $PWD\a"
+        *xterm*|*rxvt*) echo -en "\e]2;<$USERNAME@$HOST>: $PWD\a";;
+        screen) [ -n $DISPLAY ] && echo -en "\e]2;<$USERNAME@$HOST>: $PWD\a"
         ;;
     esac
 
@@ -153,8 +161,8 @@ chpwd() {
 }
 
 case "$TERM" in
-  *xterm*|*rxvt*) echo -en "\e]2;<$USER@$HOST>: $PWD\a";;
-  screen) [ -n $DISPLAY ] && echo -en "\e]2;<$USER@$HOST>: $PWD\a";;
+  *xterm*|*rxvt*) echo -en "\e]2;<$USERNAME@$HOST>: $PWD\a";;
+  screen) [ -n $DISPLAY ] && echo -en "\e]2;<$USERNAME@$HOST>: $PWD\a";;
 esac
 
 
