@@ -117,19 +117,11 @@ cerror=$fg_bold[magenta]
 chost=$fg_bold[cyan]
 ctime=$fg_bold[cyan]
 
-# a pretty complicated, 2line prompt with a lot of info
-# i replaced it with a simpler one and get the info by calling "di"
-#export PROMPT="z|%{%(!.$croot.$cname)%}%n%{$coff%}@%{$chost%}%m%{$coff%}\
-# | %d | %T\
-# | %(1j.[%{$cjobs%}%j%{$coff%}].)%(?..[%{$cerror%}%?%{$coff%}])
-#» "
+export PROMPT="%{%(!.$croot.$coff)%}%%%{$coff%} "
 
-# thats the more simple prompt
-export PROMPT="%(?..[%{$cerror%}%?%{$coff%}])%{%(!.$croot.$coff)%}%%%{$coff%} "
-# display jobs and last error on the right side of the prompt
-#export RPROMPT="%(1j.[%{$cjobs%}%j%{$coff%}].)%(?..[%{$cerror%}%?%{$coff%}])"
-# display info
 display_info() {
+
+    local E=$?
 
     if [ $UID != 0 ]; then
         echo -n "${cname}$USERNAME${coff}"
@@ -139,29 +131,37 @@ display_info() {
     echo -n "@${chost}$HOST${coff} "
 
     [ ${#jobtexts} -eq 0 ] || echo -n "| ${cjobs}${#jobtexts}${coff} "
+    [ $E -eq 0 ] || echo -n "| ${cerror}$?${coff} "
 
-    echo "| $PWD | `date +'%H:%M'` |"
+    echo "| $PWD | `date +'%H:%M:%S'` |"
+}
+
+display_info_x() {
     case "$TERM" in
         *xterm*|*rxvt*) echo -en "\e]2;<$USERNAME@$HOST>: $PWD\a";;
         screen) [ -n $DISPLAY ] && echo -en "\e]2;<$USERNAME@$HOST>: $PWD\a"
         ;;
     esac
-
 }
 
-alias di=display_info
 
-# set infos to the *terms
-chpwd() {
+display_info_full() {
     display_info
+    display_info_x
+}
+
+chpwd() {
+    display_info_full
     [[ -t 1 ]] || return
 }
 
-case "$TERM" in
-  *xterm*|*rxvt*) echo -en "\e]2;<$USERNAME@$HOST>: $PWD\a";;
-  screen) [ -n $DISPLAY ] && echo -en "\e]2;<$USERNAME@$HOST>: $PWD\a";;
-esac
+precmd() {
+    [ $? -eq 0 ] || display_info
+}
 
+alias di=display_info_full
+
+display_info_x
 
 #--------------------------------------------------------#--
 # keymapping
