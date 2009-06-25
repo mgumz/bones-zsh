@@ -13,7 +13,7 @@ fi
 
 _ssh_config=""
 if [ -f ~/.ssh/config ]; then
-  _ssh_config=( $(awk '/^Host/ { print $2 }' ~/.ssh/config))
+  _ssh_config=(${${(M)${(f)"$(<$HOME/.ssh/config)"}:#Host *}/Host\ /})
 fi
 
 hosts=(
