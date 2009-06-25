@@ -121,8 +121,6 @@ export PROMPT="%{%(!.$croot.$coff)%}%%%{$coff%} "
 
 display_info() {
 
-    local E=$?
-
     if [ $UID != 0 ]; then
         echo -n "${cname}$USERNAME${coff}"
     else
@@ -131,7 +129,7 @@ display_info() {
     echo -n "@${chost}$HOST${coff} "
 
     [ ${#jobtexts} -eq 0 ] || echo -n "| ${cjobs}${#jobtexts}${coff} "
-    [ $E -eq 0 ] || echo -n "| ${cerror}$?${coff} "
+    [ $# -eq 0 -o $1 -eq 0 ] || echo -n "| ${cerror}$1${coff} "
 
     echo "| $PWD | `date +'%H:%M:%S'` |"
 }
@@ -146,20 +144,21 @@ display_info_x() {
 
 
 display_info_full() {
-    display_info
+    display_info $@
     display_info_x
 }
 
 chpwd() {
-    display_info_full
+    display_info_full $?
     [[ -t 1 ]] || return
 }
 
 precmd() {
-    [ $? -eq 0 ] || display_info
+    local E=$?
+    [ $E -eq 0 ] || display_info $E
 }
 
-alias di=display_info_full
+di() { display_info_full $? }
 
 display_info_x
 
