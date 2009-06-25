@@ -138,8 +138,8 @@ display_info() {
 
 display_info_x() {
     case "$TERM" in
-        *xterm*|*rxvt*) echo -en "\e]2;<$USERNAME@$HOST>: $PWD\a";;
-        screen) [ -n $DISPLAY ] && echo -en "\e]2;<$USERNAME@$HOST>: $PWD\a"
+        *xterm*|*rxvt*) echo -en "\e]2;$PPID <$USERNAME@$HOST>: $PWD\a";;
+        screen) [ -n $DISPLAY ] && echo -en "\e]2;$PPID <$USERNAME@$HOST>: $PWD\a"
         ;;
     esac
 }
