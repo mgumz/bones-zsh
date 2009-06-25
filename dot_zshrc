@@ -4,10 +4,9 @@
 
 : ${(A)_etc_hosts:=${(s: :)${(ps:\t:)${${(f)~~"$(</etc/hosts)"}%%\#*}##[:blank:]#[^[:blank:]]#}}}
 
+_ssh_known_hosts=()
 if [ -f ~/.ssh/known_hosts ]; then
   _ssh_known_hosts=(${${${${(f)"$(<$HOME/.ssh/known_hosts)"}:# *}%%\ *}%%,*})
-else
-  _ssh_known_hosts=()
 fi
 
 
