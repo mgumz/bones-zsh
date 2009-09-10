@@ -191,6 +191,25 @@ z_aese() {
     eval $CMD
 }
 
+# open the associated program
+z_open() {
+
+    case "$SH_OS" in
+       WIN32|cygwin*)
+            cygstart "$*"
+            ;;
+       darwin) # TODO: check on macos
+            open "$*"
+            ;;
+       *)
+            xdg-open "$*"
+            ;;
+    esac
+}
+
+alias zo=z_open
+
+
 # print human readable numbers
 z_humanp() {
     l=""
