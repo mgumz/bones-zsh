@@ -45,6 +45,7 @@ setopt \
     hist_ignore_space \
     hist_no_functions \
     hist_reduce_blanks \
+    interactive_comments \
  no_hup \
     ksh_glob \
     list_packed \
