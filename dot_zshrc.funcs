@@ -238,6 +238,30 @@ z_humanp() {
     print $b.$d$u
 }
 
+
+z_ls_http() {
+    o_opts=( -r -np --spider )
+    echo "wget $o_opts" "$@"
+    wget $o_opts "$@" 2>&1 | awk '/^--.*--  http:\/\/.*$/ { u=$3; } /^Length: [[:digit:]]+/ { print u; }' | uniq
+}
+
+
+# use with 'sched' (zsh module)
+z_visrem() {
+
+    echo -e "\a\n\n"  # beeeeep
+    z_info "** INFORMATION **"
+
+    z_mesg
+    z_mesg "$@"
+    z_mesg
+
+    z_info "** INFORMATION ** \n\n\a"
+    display_info
+    sleep 1
+}
+
+
 if [ ${ZSH_VERSION//\./} -ge 420 ]; then
     alias -s zip='unzip -l'
     alias -s pk3='unzip -l'
