@@ -89,7 +89,7 @@ z_fakepass()
 {
   local l=8
   [ -n "$1" ] && l=$1
-  dd if=/dev/urandom count=1 2> /dev/null | uuencode -m - | head -n 2 | tail -n 1 | cut -c -$l
+  dd if=/dev/urandom count=1 2> /dev/null | openssl enc -base64 | head -n 2 | tail -n 1 | cut -c -$l
 }
 
 alias z_fakename='nc koeln.ccc.de 23 | cut -d \  -f 4,5'
