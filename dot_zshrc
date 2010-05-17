@@ -52,7 +52,7 @@ setopt \
     long_list_jobs \
     mark_dirs \
     notify \
-    promptcr \
+    prompt_cr \
     share_history
 
 HISTFILE=$HOME/.zhistory
