@@ -34,7 +34,7 @@ alias cpd='cp -rv'
 alias scpd='scp -r'
 alias rmd='rm -rvf'
 
-alias scpresume="rsync --partial --progress --rsh=ssh"
+alias scpresume="rsync --checksum --partial --progress --rsh=ssh"
 
 setenv() { typeset -x "${1}${1:+=}${(@)argv[2,$#]}" } 
 

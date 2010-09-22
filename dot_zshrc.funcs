@@ -89,7 +89,7 @@ z_fakepass()
 {
   local l=8
   [ -n "$1" ] && l=$1
-  dd if=/dev/urandom count=1 2> /dev/null | uuencode -m - | head -n 2 | tail -n 1 | cut -c -$l
+  dd if=/dev/urandom count=1 2> /dev/null | openssl enc -base64 | head -n 2 | tail -n 1 | cut -c -$l
 }
 
 alias z_fakename='nc koeln.ccc.de 23 | cut -d \  -f 4,5'
@@ -136,49 +136,55 @@ z_ddiff() {
 
 # unpacks a archive
 z_unarc() {
-    local archive=$1
-    case $archive in
+    case $1 in
         *.tar|*.tar.gz|*.tgz|*.tar.bz2|*.tbz)
-            tar xvf $1;;
+           case $SH_OS in
+                freebsd) tar xvf $1;;
+                *) tar xavf $1;;
+           esac
+           ;;
         *.tar.lzma|*.tar.lz)
             lzcat $1 | tar xvf - ;;
         *.zip|*.pk3)
             unzip $archive ;;
         *.rar)
-            unrar x $archive;;
+            unrar x $1;;
         *.7z)
-            7z x $archive;;
+            7z x $1;;
         *.ace)
-            unace x $archive;;
+            unace x $1;;
         *.rz)
-            rzip -d $archive;;
+            rzip -d $1;;
         *.tar.rz)
-            rzip -d $archive; tar xvf ${archive%.rz};;
+            rzip -d $1; tar xvf ${1%.rz};;
     esac
 }
 
 # list content of an archive
 z_liarc() {
-    local archive=$1
-    case $archive in
+    case $1 in
         *.tar|*.tar.gz|*.tgz|*.tar.bz2|*.tbz)
-            tar tvf $1;;
+            case $SH_OS in
+                freebsd) tar tvf $1;;
+                *) tar tavf $1;;
+            esac
+            ;;
         *.tar.lzma|*.tar.lz)
             lzcat $1 | tar tvf - ;;
         *.zip|*.pk3)
             unzip -l $archive ;;
         *.rar)
-            unrar l $archive;;
+            unrar l $1;;
         *.7z)
-            7z l $archive;;
+            7z l $1;;
         *.ace)
-            unace l $archive;;
+            unace l $1;;
         *.rpm)
-            rpm -l $archive;;
+            rpm -l $1;;
         *.o)
-            nm $archive;;
+            nm $1;;
         *.a)
-            ar t $archive;;
+            ar t $1;;
     esac
 }
 
