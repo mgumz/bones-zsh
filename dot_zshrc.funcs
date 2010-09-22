@@ -140,6 +140,8 @@ z_unarc() {
     case $archive in
         *.tar|*.tar.gz|*.tgz|*.tar.bz2|*.tbz)
             tar xvf $1;;
+        *.tar.lzma|*.tar.lz)
+            lzcat $1 | tar xvf - ;;
         *.zip|*.pk3)
             unzip $archive ;;
         *.rar)
@@ -161,6 +163,8 @@ z_liarc() {
     case $archive in
         *.tar|*.tar.gz|*.tgz|*.tar.bz2|*.tbz)
             tar tvf $1;;
+        *.tar.lzma|*.tar.lz)
+            lzcat $1 | tar tvf - ;;
         *.zip|*.pk3)
             unzip -l $archive ;;
         *.rar)
