@@ -172,7 +172,7 @@ z_liarc() {
         *.tar.lzma|*.tar.lz)
             lzcat $1 | tar tvf - ;;
         *.zip|*.pk3)
-            unzip -l $archive ;;
+            unzip -l $1 ;;
         *.rar)
             unrar l $1;;
         *.7z)
