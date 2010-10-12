@@ -145,6 +145,8 @@ z_unarc() {
            ;;
         *.zip|*.pk3|*.jar)
             unzip $1 ;;
+        *.tar.lzma|*.tar.lz)
+            lzcat $1 | tar xvf - ;;
         *.rar)
             unrar x $1;;
         *.7z)
@@ -167,6 +169,8 @@ z_liarc() {
                 *) tar tavf $1;;
             esac
             ;;
+        *.tar.lzma|*.tar.lz)
+            lzcat $1 | tar tvf - ;;
         *.zip|*.pk3|*.jar)
             unzip -l $1;;
         *.rar)
