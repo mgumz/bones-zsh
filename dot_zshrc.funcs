@@ -143,10 +143,8 @@ z_unarc() {
                 *) tar xavf $1;;
            esac
            ;;
-        *.tar.lzma|*.tar.lz)
-            lzcat $1 | tar xvf - ;;
-        *.zip|*.pk3)
-            unzip $archive ;;
+        *.zip|*.pk3|*.jar)
+            unzip $1 ;;
         *.rar)
             unrar x $1;;
         *.7z)
@@ -169,10 +167,8 @@ z_liarc() {
                 *) tar tavf $1;;
             esac
             ;;
-        *.tar.lzma|*.tar.lz)
-            lzcat $1 | tar tvf - ;;
-        *.zip|*.pk3)
-            unzip -l $archive ;;
+        *.zip|*.pk3|*.jar)
+            unzip -l $1;;
         *.rar)
             unrar l $1;;
         *.7z)
@@ -269,6 +265,10 @@ z_visrem() {
     z_info "** INFORMATION ** \n\n\a"
     display_info
     sleep 1
+}
+
+z_init_pyenv() {
+    python -c "import urllib, os; os.mkdir('py-env'); urllib.urlretrieve('http://goo.gl/D2RB', 'py-env/virtualenv.py')"
 }
 
 
