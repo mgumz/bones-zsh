@@ -72,7 +72,7 @@ case "$SH_OS" in
         ;;
     *)
         # i am a developer, so i need cores :)
-        limit coredumpsize 10M
+        #limit coredumpsize 10M
         ;;
 esac
 
@@ -184,7 +184,7 @@ bindkey "^?" backward-delete-char
 #----------------------------------------------------
 # keychain => http://www.gentoo.org/projects/keychain
 #----------------------------------------------------
-if [ x"$USERNAME" != x"root" ]
+if [ x"$USERNAME" != x"root" -a ! -n "${NO_KEYCHAIN+x}" ]
 then
     keys=""
     [ ! -f ~/.ssh/id_dsa ] || keys="~/.ssh/id_dsa "
