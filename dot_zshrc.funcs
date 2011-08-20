@@ -272,7 +272,7 @@ z_visrem() {
 }
 
 z_init_pyenv() {
-    python -c "import urllib, os; os.mkdir('py-env'); urllib.urlretrieve('http://goo.gl/D2RB', 'py-env/virtualenv.py')"
+    python -c "import urllib, os; os.mkdir('py-env'); urllib.urlretrieve('http://goo.gl/q6Iww', 'py-env/virtualenv.py')"
 }
 
 
