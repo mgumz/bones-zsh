@@ -132,13 +132,23 @@ display_info() {
     [ ${#jobtexts} -eq 0 ] || echo -n "| ${cjobs}${#jobtexts}${coff} "
     [ $# -eq 0 -o $1 -eq 0 ] || echo -n "| ${cerror}$1${coff} "
 
-    echo "| $PWD | `date +'%H:%M:%S'` |"
+    _GIT_INFO=$(git describe --all --long 2> /dev/null )
+    if [ "x_$GIT_INFO" != "x" ]; then
+        _GIT_HEAD=$(git symbolic-ref --short HEAD 2> /dev/null)
+        if [ "x$_GIT_HEAD" != "x" ]; then
+            _GIT_INFO=" ${croot}$_GIT_HEAD${coff} - $_GIT_INFO"
+        fi
+    fi
+
+    echo "| $PWD | `date +'%H:%M:%S'` |$_GIT_INFO"
 }
 
 display_info_x() {
+    local CMD=$1
+    if [ "$1"x != "x" ]; then CMD="${CMD} | "; fi
     case "$TERM" in
-        *xterm*|*rxvt*) echo -en "\e]2;$PPID <$USERNAME@$HOST>: $PWD\a";;
-        screen) [ -n $DISPLAY ] && echo -en "\e]2;$PPID <$USERNAME@$HOST>: $PWD\a"
+        *xterm*|*rxvt*) echo -en "\e]2;${CMD}$PPID <$USERNAME@$HOST>: ${PWD}\a";;
+        screen) [ -n $DISPLAY ] && echo -en "\e]2;${CMD}$PPID <$USERNAME@$HOST>: ${PWD}\a"
         ;;
     esac
 }
@@ -158,6 +168,21 @@ precmd() {
     local E=$?
     [ $E -eq 0 ] || display_info $E
 }
+
+preexec() {
+    local CMD=$1
+    case "$TERM" in
+    *xterm*|screen*)
+        case "$CMD" in
+            *\033]0*) ;;
+            *) display_info_x $CMD ;;
+        esac
+        ;;
+    *)
+        ;;
+    esac
+}
+
 
 di() { display_info_full $? }
 

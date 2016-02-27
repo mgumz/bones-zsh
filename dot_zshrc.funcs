@@ -149,7 +149,7 @@ z_unarc() {
             lzcat $1 | tar xvf - ;;
         *.rar)
             unrar x $1;;
-        *.7z)
+        *.7z|*.xz)
             7z x $1;;
         *.ace)
             unace x $1;;
@@ -175,7 +175,7 @@ z_liarc() {
             unzip -l $1;;
         *.rar)
             unrar l $1;;
-        *.7z)
+        *.7z|*.xz)
             7z l $1;;
         *.ace)
             unace l $1;;
@@ -272,7 +272,7 @@ z_visrem() {
 }
 
 z_init_pyenv() {
-    python -c "import urllib, os; os.mkdir('py-env'); urllib.urlretrieve('http://goo.gl/D2RB', 'py-env/virtualenv.py')"
+    python -c "import urllib, os; os.mkdir('py-env'); urllib.urlretrieve('http://goo.gl/sJhEO', 'py-env/virtualenv.py')"
 }
 
 
