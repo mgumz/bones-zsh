@@ -111,6 +111,7 @@ zstyle ':completion:*' list-colors $LS_COLORS
 #--------------------------------------------------------#--
 
 coff=$reset_color
+cbg="${coff}${bg[black]}"
 croot=$fg_bold[red]
 cname=$fg_bold[green]
 cjobs=$fg_bold[yellow]
@@ -120,30 +121,33 @@ ctime=$fg_bold[cyan]
 
 export PROMPT="%{%(!.$croot.$coff)%}%%%{$coff%} "
 
-display_info() {
+function display_info() {
 
-    if [ $UID != 0 ]; then
-        echo -n "${cname}$USERNAME${coff}"
-    else
-        echo -n "${croot}$USERNAME${coff}"
+    local info="${cbg}"
+
+    info+="%(!.${croot}.${cname})%n${cbg}@${chost}%m${cbg}" # user@machine
+    info+="%(1j. | ${cjobs}%j${cbg}.)"                      # number jobs
+
+    #
+    if [ $# -ne 0 -a "$1" != "0" ]; then
+        info+=" | ${cerror}${1}${cbg}"
     fi
-    echo -n "@${chost}$HOST${coff} "
 
-    [ ${#jobtexts} -eq 0 ] || echo -n "| ${cjobs}${#jobtexts}${coff} "
-    [ $# -eq 0 -o $1 -eq 0 ] || echo -n "| ${cerror}$1${coff} "
+    info+=" | %/"                                      # pwd
+    info+=" | %D{%Y-%m-%d} %*"                         # date-time
 
     _GIT_INFO=$(git describe --all --long 2> /dev/null )
-    if [ "x_$GIT_INFO" != "x" ]; then
+    if [ -n "$_GIT_INFO" ]; then
         _GIT_HEAD=$(git symbolic-ref --short HEAD 2> /dev/null)
-        if [ "x$_GIT_HEAD" != "x" ]; then
-            _GIT_INFO=" ${croot}$_GIT_HEAD${coff} - $_GIT_INFO"
+        if [ -n "$_GIT_HEAD" ]; then
+            info+=" | ${croot}%{$_GIT_HEAD%}${cbg} - %{$_GIT_INFO%}"
         fi
     fi
 
-    echo "| $PWD | `date +'%H:%M:%S'` |$_GIT_INFO"
+    print -P "$info%E"
 }
 
-display_info_x() {
+function display_info_x() {
     local CMD=$1
     if [ "$1"x != "x" ]; then CMD="${CMD} | "; fi
     case "$TERM" in
