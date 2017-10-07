@@ -249,13 +249,6 @@ z_humanp() {
 }
 
 
-z_ls_http() {
-    o_opts=( -r -np --spider )
-    echo "wget $o_opts" "$@"
-    wget $o_opts "$@" 2>&1 | awk '/^--.*--  http:\/\/.*$/ { u=$3; } /^Length: [[:digit:]]+/ { print u; }' | uniq
-}
-
-
 # use with 'sched' (zsh module)
 z_visrem() {
 
