@@ -121,5 +121,7 @@ if [ ${ZSH_VERSION//\./} -ge 420 ]; then
 
 fi
 
+alias gopath='export GOPATH=`pwd`;echo "GOPATH: $GOPATH"'
+
 
 # vim:ft=zsh
