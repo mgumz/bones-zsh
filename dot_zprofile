@@ -36,4 +36,6 @@ else
   fi
 fi
 
+[ ! -e ~/.zprofile.local ] || source ~/.zprofile.local
+
 # vim:ft=zsh
