@@ -1,18 +1,16 @@
 #------------------------------------------------------------------#--
-# my zsh-config ... coz zsh rox hell
 #------------------------------------------------------------------#--
 
 : ${(A)_etc_hosts:=${(s: :)${(ps:\t:)${${(f)~~"$(</etc/hosts)"}%%\#*}##[:blank:]#[^[:blank:]]#}}}
 
-_ssh_known_hosts=()
+local _ssh_known_hosts=()
 if [ -f ~/.ssh/known_hosts ]; then
   _ssh_known_hosts=(${${${${(f)"$(<$HOME/.ssh/known_hosts)"}:# *}%%\ *}%%,*})
 fi
 
-
-_ssh_config=""
+local _ssh_config=()
 if [ -f ~/.ssh/config ]; then
-  _ssh_config=(${${(M)${(f)"$(cat $HOME/.ssh/config*)"}:#Host *}/Host\ /})
+  _ssh_config=(${(s: :)${${(M)${(f)"$(cat $HOME/.ssh/config*)"}:#Host *}/Host\ /}})
 fi
 
 hosts=(
