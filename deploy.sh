@@ -1,7 +1,7 @@
 #!/bin/sh
 
-for i in zshenv zprofile zshrc zlogin zshrc.aliases zshrc.funcs
+for i in zshenv zprofile zshrc zlogin zshrc.aliases zshrc.funcs zshcompletions
 do
     [ ! -f ~/.$i ] || cp -v ~/.$i ~/.$i.bkp
-    cp -v dot_$i ~/.$i
+    cp -r -v dot_$i ~/.$i
 done
