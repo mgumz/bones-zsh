@@ -14,52 +14,11 @@ z_mesg() { echo -e "${fg_bold[cyan]}[ m ]${reset_color} $@" }
 alias z_indent='indent -nsaf -npcs -cli2 -i2 -lp -nprs -nsaw -nut -cbi2 -bli0 -bls -nbad -npsl'
 alias z_diff='diff -abBpur'
 
-alias z_svnstat="svn status | awk '/^[^?]/'"
-# use with   svn diff -r `sh_svnprev`
-z_svnprev() { echo $(( `svnversion . | sed 's/[^0-9].*//'` - 1)) }
-
-
-z_hgdiff() {
-
-    if [ $# -lt 1 ]; then
-        echo "$0 file"
-        return
-    fi
-
-    hg cat $1 | vim - -c ":vert diffsplit $1" -c "map q :qa!<cr>"
-
-}
-
 z_diffstat() {
     awk 'BEGIN { inserts=0; removals=0; } \
          /^\+/ { inserts++; } \
          /^-/ { removals++; } \
          END { print "inserts ", inserts, " removals ", removals ; }'
-}
-
-#
-# change to a profile written down in $HOME/.myprofiles
-#
-#   #begin[NAME]
-#     FOO=BAR
-#     JOHN=DOE
-#   #end[NAME]
-#
-# $1 - name of the profile (a must)
-# $2 - name of the profilefile (optional)
-z_myprofile()
-{
-  f=$HOME/.myprofiles
-  [ -n "$1" ] || return 1
-  [ -n "$2" ] && f="$2"
-  z_info "setting profiles to \"$1\" ... "
-
-  sed -n '/^#begin\['$1'\]/,/^#end\['$1'\]/p' "$f" |
-  while read l
-  do
-    eval $l
-  done
-  z_success "done"
 }
 
 alias z_dubigf='find . -size +10M -exec ls -1 "{}" ";"'
@@ -131,7 +90,6 @@ z_ddiff() {
 
     rm -f "$tmp1" "$tmp2"
 }
-
 
 
 # unpacks a archive
@@ -249,23 +207,12 @@ z_humanp() {
 }
 
 
-# use with 'sched' (zsh module)
-z_visrem() {
-
-    echo -e "\a\n\n"  # beeeeep
-    z_info "** INFORMATION **"
-
-    z_mesg
-    z_mesg "$@"
-    z_mesg
-
-    z_info "** INFORMATION ** \n\n\a"
-    display_info
-    sleep 1
-}
-
 z_init_pyenv() {
     python -c "import urllib, os; os.mkdir('py-env'); urllib.urlretrieve('http://goo.gl/sJhEO', 'py-env/virtualenv.py')"
+}
+
+z_showcert() {
+    openssl x509 -text -noout -in $1
 }
 
 
@@ -284,36 +231,45 @@ if [ ${ZSH_VERSION//\./} -ge 420 ]; then
     alias -s gz='gzip -c -d'
 fi
 
-# os stuff
-case "$SH_OS" in
-    freebsd)
-        pkg_chkupgrade() {
-            sudo portupgrade -ran 2> /dev/null | awk '/^[[:space:]]+[\+].*/ { print $0 }' | sort -r
-        }
+################################################################################
+# k8s section
+################################################################################
+alias kc='kubectl'
 
-        geli_on() {
-            if [ $# -lt 1 ]; then
-                echo "$0 encfile"
-                return 1
-            fi
+k8s-activate() {
+	local c="${1:-`pwd`/admin.conf}"
+	if [ ! -f "$c" ]; then
+		echo "$c does not exist"
+		return 1
+	fi
+    c=$(python -c "import os,sys;print(os.path.realpath('$c'))")
+	export KUBECONFIG="$c"
+	source <(kubectl completion zsh)
+	source <(helm completion zsh)
+}
 
-            sudo mdconfig -a -t vnode -f $1 -u 0
-            sudo geli attach -k $1.key /dev/md0
+k8s-pod-node-name() { kubectl get pod "$@" -ojson | jq -j '.spec.nodeName' }
+k8s-pod-containers() {
+	kubectl get pod "$@" -ojson | \
+		jq -r '.status.containerStatuses[] | .name + " @ " + .image'
+}
 
-        }
+k8s-pod-ls() { 
+	kubectl get pods "-o=custom-columns=Name:.metadata.name,Node:.spec.nodeName,Memory:.spec.containers[].resources.limits.memory,IP:.status.podIP,Status:.status.phase,Image:.spec.containers[].image" "$@" 
+}
 
-        geli_off() {
-            if [ $# -lt 1 ]; then
-                echo "$0 encfile"
-                return 1
-            fi
 
-            sudo geli detach /dev/md0
-            sudo mdconfig -d -u 0
-        }
 
-        port_search() {
-            make -C /usr/ports search name=$*
-        }
-        ;;
-esac
+################################################################################
+# docker section
+################################################################################
+
+# https://djs55.github.io/jekyll/update/2017/11/27/docker-for-mac-disk-space.html
+# /Users/mg/Library/Containers/com.docker.docker/Data/vms/0
+docker-prune() {
+    docker run --rm -it --privileged --pid=host walkerlee/nsenter -t 1 -m -u -i -n fstrim /var/lib/docker
+}
+docker-vm() {
+    screen ~/Library/Containers/com.docker.docker/Data/com.docker.driver.amd64-linux/tty
+}
+
