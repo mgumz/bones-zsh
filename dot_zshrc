@@ -42,9 +42,11 @@ setopt \
     glob \
     glob_complete \
     glob_dots \
+    hist_find_no_dups \
     hist_no_store \
     hist_save_no_dups \
     hist_ignore_space \
+    hist_ignore_all_dups \
     hist_no_functions \
     hist_reduce_blanks \
     inc_append_history \
@@ -102,6 +104,7 @@ fi
 #--------------------------------------------------------#--
 # completion
 #--------------------------------------------------------#--
+fpath=($HOME/.zshcompletions $fpath)
 autoload -U compinit && compinit -u
 compdef _man w3mman
 compdef _ssh ssh2
@@ -131,28 +134,33 @@ export PROMPT="%{%(!.$croot.$coff)%}%%%{$coff%} "
 
 function display_info() {
 
-    local info="${cbg}"
+    local _info="${cbg}"
 
-    info+="%(!.${croot}.${cname})%n${cbg}@${chost}%m${cbg}" # user@machine
-    info+="%(1j. | ${cjobs}%j${cbg}.)"                      # number jobs
+    _info+="%(!.${croot}.${cname})%n${cbg}@${chost}%m${cbg}" # user@machine
+    _info+="%(1j. | ${cjobs}%j${cbg}.)"                      # number jobs
 
     #
     if [ $# -ne 0 -a "$1" != "0" ]; then
-        info+=" | ${cerror}${1}${cbg}"
+        _info+=" | ${cerror}${1}${cbg}"
     fi
 
-    info+=" | %/"                                      # pwd
-    info+=" | %D{%Y-%m-%d} %*"                         # date-time
+    _info+=" | %/"                                      # pwd
+    _info+=" | %D{%Y-%m-%d} %*"                         # date-time
 
     _GIT_INFO=$(git describe --all --long 2> /dev/null )
     if [ -n "$_GIT_INFO" ]; then
         _GIT_HEAD=$(git symbolic-ref --short HEAD 2> /dev/null)
         if [ -n "$_GIT_HEAD" ]; then
-            info+=" | ${croot}%{$_GIT_HEAD%}${cbg} - %{$_GIT_INFO%}"
+            _info+=" | ${croot}%{$_GIT_HEAD%}${cbg} - %{$_GIT_INFO%}"
         fi
     fi
 
-    print -P "$info%E"
+    if [ -n "$KUBECONFIG" -a $(which yq) ]; then
+        local _K8S_CTX=$(yq r - current-context < $KUBECONFIG)
+        _info+=" | ⎈ $_K8S_CTX"
+    fi
+
+    print -P "$_info%E"
 }
 
 function display_info_x() {
@@ -246,3 +254,4 @@ for rc in ~/.zshrc.aliases ~/.zshrc.funcs ~/.zshrc.local ; do
 done
 
 # vim:nowrap:ft=zsh
+
