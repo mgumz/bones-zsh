@@ -145,7 +145,7 @@ function display_info() {
     fi
 
     _info+=" | %/"                                      # pwd
-    _info+=" | %D{%Y-%m-%d} %*"                         # date-time
+    _info+=" | %D{%Y-%m-%d} W%D{%W} %*"                 # date-time
 
     _GIT_INFO=$(git describe --all --long 2> /dev/null )
     if [ -n "$_GIT_INFO" ]; then
