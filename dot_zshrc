@@ -156,7 +156,7 @@ function display_info() {
     fi
 
     if [ -n "$KUBECONFIG" -a $(which yq) ]; then
-        local _K8S_CTX=$(yq r - current-context < $KUBECONFIG)
+        local _K8S_CTX=$(yq e '.current-context' $KUBECONFIG)
         _info+=" | ⎈ $_K8S_CTX"
     fi
 
