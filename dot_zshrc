@@ -130,7 +130,7 @@ cerror=$fg_bold[magenta]
 chost=$fg_bold[cyan]
 ctime=$fg_bold[cyan]
 
-export PROMPT="%{%(!.$croot.$coff)%}%%%{$coff%} "
+export PROMPT="%{%(!.$croot.$coff)%};%{$coff%} "
 
 function display_info() {
 
