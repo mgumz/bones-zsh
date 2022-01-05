@@ -253,5 +253,9 @@ for rc in ~/.zshrc.aliases ~/.zshrc.funcs ~/.zshrc.local ; do
   [ ! -f $rc ] || source $rc
 done
 
+## not in .zlogin coz display_info is used only for interactive
+## sessions
+display_info
+
 # vim:nowrap:ft=zsh
 
