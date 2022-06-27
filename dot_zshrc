@@ -10,7 +10,7 @@ fi
 
 local _ssh_config=()
 if [ -f ~/.ssh/config ]; then
-  _ssh_config=(${(s: :)${${(M)${(f)"$(cat $HOME/.ssh/config*)"}:#Host *}/Host\ /}})
+  _ssh_config=(`awk '/Host / && $2 !~ "*" { print $2 }' .config/ssh/**/config`)
 fi
 
 hosts=(
