@@ -93,8 +93,6 @@ compdef _ssh ssh2
 zstyle ':completion:*::::' completer _expand _complete _ignored #_approximate
 zstyle ':completion:*:expand:*' tag-order all-expansions
 
-zstyle '*' hosts $hosts
-
 zstyle ':completion:*:processes' command 'ps x -o pid,nice,pcpu,tt,args'
 zstyle ':completion:*' list-colors $LS_COLORS
 
@@ -197,12 +195,12 @@ zle -N select-word-style
 select-word-style bash
 bindkey -e
 #bindkey '\e^h' delete-backward-word  # alt - backspace
-bindkey ' ' magic-space              # history completion with space too
-bindkey '^[[1;3D' emacs-backward-word
-bindkey '^[[1;3C' emacs-forward-word
-bindkey '' vi-match-bracket        # ctrl 5
-bindkey '^[[8~' end-of-line          # home
-bindkey '^[[7~' beginning-of-line    # end
+bindkey ' ' magic-space               # history completion with space too
+bindkey '^[[1;3D' emacs-backward-word # alt-cursor-left
+bindkey '^[[1;3C' emacs-forward-word  # alt-cursor-right
+bindkey '' vi-match-bracket         # ctrl 5
+bindkey '^[[8~' end-of-line           # home
+bindkey '^[[7~' beginning-of-line     # end
 bindkey '^k' kill-line
 bindkey "^?" backward-delete-char
 #  c-_ is undo

@@ -20,11 +20,6 @@ function {
 
     local _etc_hosts=( $(awk '!/^#/ { print $2 }' < /etc/hosts ) )
 
-    local _ssh_known_hosts=()
-    if [ -f ~/.ssh/known_hosts ]; then
-      _ssh_known_hosts=(${${${${(f)"$(<$HOME/.ssh/known_hosts)"}:# *}%%\ *}%%,*})
-    fi
-
     local _ssh_config_hosts=()
     if [ -f ~/.ssh/config ]; then
       _ssh_config_hosts=(`awk '/Host / && \$2 !~ /\*/ { print $2 }' .ssh/**/config`)
@@ -32,12 +27,13 @@ function {
 
     hosts=(
         "$_etc_hosts[@]"
-        "$_ssh_known_hosts[@]"
         "$_ssh_config_hosts[@]"
         localhost
     )
 
     typeset -U hosts
+
+    zstyle '*' hosts $hosts
 }
 
 # vim:ft=zsh
