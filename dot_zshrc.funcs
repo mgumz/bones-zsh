@@ -273,3 +273,72 @@ docker-vm() {
     screen ~/Library/Containers/com.docker.docker/Data/com.docker.driver.amd64-linux/tty
 }
 
+docker-host() {
+    docker run -it --privileged --pid=host debian nsenter -t 1 -m -u -n -i sh
+}
+
+
+################################################################################
+# 1pwd section
+################################################################################
+
+fzop() {
+    op item list --long --iso-timestamps|sed 1d|fzf
+}
+
+eval "$(op completion zsh)"; compdef _op op
+
+
+################################################################################
+# console art section
+################################################################################
+
+icat() { kitty +kitten icat --align=left "$@" }
+isvg() { rsvg-convert | icat "$@" }
+idot() { dot -Tsvg \
+            -Gbgcolor=black \
+            -Nbgcolor=black \
+            -Ebgcolor=black \
+            -Gcolor=white \
+            -Ncolor=white \
+            -Ecolor=white \
+            -Gfontcolor=white \
+            -Efontcolor=white \
+            -Nfontcolor=white |isvg }
+
+ipuml() { plantuml -Tsvg -p |isvg }
+
+################################################################################
+# homebrew section
+################################################################################
+
+_brew-cask-greedy-numbers() {
+    brew outdated --cask --greedy --verbose | awk '/[0-9]$/ { print $0 }'
+}
+_brew-cask-upgrade-greedy-numbers() {
+    brew-cask-greedy-numbers | awk '{print $1}' | xargs brew upgrade --cask --greedy "$@"
+}
+
+brew-greedy-numbers() {
+    brew outdated --greedy --json=v2 | \
+        jq -r '.formulae + .casks | .[] | select(.current_version != "latest") | .name + ":" + .current_version'
+}
+
+brew-upgrade-greedy-numbers() {
+    brew outdated --greedy --json=v2 --formula | \
+        jq -r '.formulae | .[] | select(.current_version != "latest") | .name' | \
+        tee | \
+        xargs brew upgrade --formula
+    brew outdated --greedy --json=v2 --cask | \
+        jq -r '.casks | .[] | select(.current_version != "latest") | .name' | \
+        tee | \
+        xargs brew upgrade --casks
+}
+
+################################################################################
+# misc section
+################################################################################
+jwt-decode() {
+    jq -R 'split(".") | .[1] | @base64d | fromjson'
+}
+

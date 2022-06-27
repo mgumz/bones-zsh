@@ -123,5 +123,8 @@ fi
 
 alias gopath='export GOPATH=`pwd`;echo "GOPATH: $GOPATH"'
 
+epochz() { epoch -quiet -tz utc "$@" }
+
+alias exa="exa --time-style=long-iso --git"
 
 # vim:ft=zsh
