@@ -10,9 +10,9 @@ alias p='ps -f'
 alias cd..='cd ..'
 alias ..='cd ..'
 
-function ++() { pushd "$@" }
+--() { popd }
+++() { pushd "$@" }
 compdef _cd ++
-function --() { popd }
 
 xmv() {
     xargs -J % mv % "$@"
@@ -30,7 +30,7 @@ man() {
         man "$@"
 }
 
-function z_scpresume() {
+z_scpresume() {
     rsync --checksum --partial --progress --rsh=ssh "$@"
 }
 
