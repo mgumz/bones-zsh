@@ -104,8 +104,13 @@ fi
 #--------------------------------------------------------#--
 # completion
 #--------------------------------------------------------#--
-fpath=($HOME/.zshcompletions $fpath)
+if type brew &>/dev/null; then
+  FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
+  FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
+fi
+FPATH=$HOME/.zshcompletions:$FPATH
 autoload -U compinit && compinit -u
+
 compdef _man w3mman
 compdef _ssh ssh2
 
@@ -132,7 +137,7 @@ ctime=$fg_bold[cyan]
 
 export PROMPT="%{%(!.$croot.$coff)%};%{$coff%} "
 
-function display_info() {
+display_info() {
 
     local _info="${cbg}"
 
@@ -163,7 +168,7 @@ function display_info() {
     print -P "$_info%E"
 }
 
-function display_info_x() {
+display_info_x() {
     local CMD=$1
     if [ "$1"x != "x" ]; then CMD="${CMD} | "; fi
     case "$TERM" in
@@ -217,8 +222,8 @@ select-word-style bash
 bindkey -e
 #bindkey '\e^h' delete-backward-word  # alt - backspace
 bindkey ' ' magic-space              # history completion with space too
-bindkey '[D' emacs-backward-word     # alt-cursor-left
-bindkey '[C' emacs-forward-word      # alt-cursor-right
+bindkey '^[[1;3D' emacs-backward-word
+bindkey '^[[1;3C' emacs-forward-word
 bindkey '' vi-match-bracket        # ctrl 5
 bindkey '^[[8~' end-of-line          # home
 bindkey '^[[7~' beginning-of-line    # end
@@ -249,7 +254,7 @@ fi
 #-----------------
 # host-specifics
 #-----------------
-for rc in ~/.zshrc.aliases ~/.zshrc.funcs ~/.zshrc.local ; do
+for rc in ~/.zshrc.funcs ~/.zshrc.aliases ~/.zshrc.local ; do
   [ ! -f $rc ] || source $rc
 done
 
@@ -258,4 +263,3 @@ done
 display_info
 
 # vim:nowrap:ft=zsh
-
