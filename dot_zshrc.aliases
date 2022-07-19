@@ -199,8 +199,18 @@ ineato() { neato -Tsvg \
 # 1password
 #--------------------------------------------------------#--
 
-fzop() {
-    op item list --long --iso-timestamps|sed 1d|fzf
+op-fzf() {
+    op item list --no-color --long --iso-timestamps| \
+        sed 1d| \
+        fzf| \
+        awk '{ print $1 }'
+}
+
+op-fzfp() {
+    op item list --no-color --long --iso-timestamps| \
+        sed 1d| \
+        fzf --preview 'op item get {1}'| \
+        awk '{ print $1 }'
 }
 
 eval "$(op completion zsh)"; compdef _op op
