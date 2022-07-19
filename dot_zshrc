@@ -109,6 +109,7 @@ cerror=$fg_bold[magenta]
 chost=$fg_bold[cyan]
 ctime=$fg_bold[cyan]
 
+# https://twitter.com/thingskatedid/status/1316081075043463170
 export PROMPT="%{%(!.$croot.$coff)%};%{$coff%} "
 
 display_info() {
