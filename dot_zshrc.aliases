@@ -37,16 +37,16 @@ z_scpresume() {
 alias z_diff='diff -abBpur'
 
 z_diffstat() {
-    awk 'BEGIN { inserts=0; removals=0; } \
-         /^\+/ { inserts++; } \
-         /^-/ { removals++; } \
-         END { print "inserts ", inserts, " removals ", removals ; }'
+    awk 'BEGIN  { inserts=0; removals=0; } \
+         /^\+/  { inserts++; } \
+         /^-/   { removals++; } \
+         END    { print "inserts ", inserts, " removals ", removals ; }'
 }
 
 # check hosts that are online
 z_whoisonline() {
 
-    if ! which nmap 2>&1 > /dev/null; then
+    if ! whence -p nmap > /dev/null; then
         echo "nmap is not installed."
         return 1
     fi
@@ -59,6 +59,10 @@ z_whoisonline() {
     z_info "testing $1 for online boxes"
     sudo nmap --system-dns -sP $1 | awk '/Host/ && /up/ { print $0; }'
     z_success "done"
+}
+
+z_list_zombies() {
+    ps "$@" -xo pid,ppid,stat,command |awk '$3 == "Z"'
 }
 
 #--------------------------------------------------------#--

@@ -80,7 +80,7 @@ fi
 #--------------------------------------------------------#--
 # completion
 #--------------------------------------------------------#--
-if type brew &>/dev/null; then
+if whence -p brew > /dev/null; then
   FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
   FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
 fi
@@ -135,7 +135,7 @@ display_info() {
         fi
     fi
 
-    if [ -n "$KUBECONFIG" -a $(which yq) ]; then
+    if [ "${KUBECONFIG}x" != "x" -a $(whence -p yq > /dev/null) ]; then
         local _K8S_CTX=$(yq e '.current-context' $KUBECONFIG)
         _info+=" | ⎈ $_K8S_CTX"
     fi
@@ -205,25 +205,6 @@ bindkey '^[[7~' beginning-of-line     # end
 bindkey '^k' kill-line
 bindkey "^?" backward-delete-char
 #  c-_ is undo
-
-#----------------------------------------------------
-# keychain => http://www.gentoo.org/projects/keychain
-#----------------------------------------------------
-if [ x"$USERNAME" != x"root" -a ! -n "${NO_KEYCHAIN+x}" ]
-then
-    keys=""
-    [ ! -f ~/.ssh/id_dsa ] || keys="~/.ssh/id_dsa "
-    [ ! -f ~/.ssh/id_rsa ] || keys="$keys ~/.ssh/id_rsa"
-    if [ -n "$keys" ]; then
-        if which keychain &> /dev/null
-        then
-            eval "keychain -q $keys"
-            . ~/.keychain/${HOST}-sh
-        fi
-    fi
-    unset keys
-fi
-
 
 
 #-----------------
