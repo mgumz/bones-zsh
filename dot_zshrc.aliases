@@ -65,6 +65,10 @@ z_list_zombies() {
     ps "$@" -xo pid,ppid,stat,command |awk '$3 == "Z"'
 }
 
+z_ps() {
+    ps -xo pid,ppid,pcpu,cpuid,time,stat,comm,args "$@" 
+}
+
 #--------------------------------------------------------#--
 # crypto section
 #--------------------------------------------------------#--
