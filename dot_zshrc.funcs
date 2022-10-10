@@ -22,7 +22,7 @@ function {
 
     local _ssh_config_hosts=()
     if [ -f ~/.ssh/config ]; then
-      _ssh_config_hosts=(`awk '/Host / && \$2 !~ /\*/ { print $2 }' .ssh/**/config`)
+      _ssh_config_hosts=(`awk '/Host / && \$2 !~ /\*/ { print $2 }' ~/.ssh/**/config`)
     fi
 
     hosts=(
