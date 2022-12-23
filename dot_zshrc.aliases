@@ -30,13 +30,15 @@ man() {
         man "$@"
 }
 
-z_scpresume() {
+,scpresume() {
     rsync --checksum --partial --progress --rsh=ssh "$@"
 }
 
-alias z_diff='diff -abBpur'
+,diff() { 
+    diff -abBpur "$@"
+}
 
-z_diffstat() {
+,diffstat() {
     awk 'BEGIN  { inserts=0; removals=0; } \
          /^\+/  { inserts++; } \
          /^-/   { removals++; } \
@@ -44,7 +46,7 @@ z_diffstat() {
 }
 
 # check hosts that are online
-z_whoisonline() {
+,whoisonline() {
 
     if ! whence -p nmap > /dev/null; then
         echo "nmap is not installed."
@@ -61,11 +63,11 @@ z_whoisonline() {
     z_success "done"
 }
 
-z_list_zombies() {
+,list_zombies() {
     ps "$@" -xo pid,ppid,stat,command |awk '$3 == "Z"'
 }
 
-z_ps() {
+,ps() {
     ps -xo pid,ppid,pcpu,cpuid,time,stat,comm,args "$@" 
 }
 
@@ -73,27 +75,29 @@ z_ps() {
 # crypto section
 #--------------------------------------------------------#--
 
-z_fakepass() {
+,fakepass() {
   local l=8
   [ -n "$1" ] && l=$1
-  dd if=/dev/urandom count=1 2> /dev/null | openssl enc -base64 | head -n 2 | tail -n 1 | cut -c -$l
+  dd if=/dev/urandom count=1 2> /dev/null | \
+      openssl enc -base64 -A | \
+      awk 'NR == 1 { printf("%.'$l's\n", $1) }'
 }
 
 # alias z_fakename='nc koeln.ccc.de 23 | cut -d \  -f 4,5'
 
-z_aesd() {
+,aesd() {
     CMD="openssl enc -d -a -aes-256-ecb -salt"
     [ $# -eq 0 ] || CMD="$CMD -in $1"
     eval $CMD
 }
 
-z_aese() {
+,aese() {
     CMD="openssl enc -a -aes-256-ecb -salt"
     [ $# -eq 0 ] || CMD="$CMD -in $1"
     eval $CMD
 }
 
-z_showcert() {
+,showcert() {
     openssl x509 -text -noout -in $1
 }
 
@@ -101,7 +105,7 @@ z_showcert() {
 # k8s section
 #--------------------------------------------------------#--
 
-k8s-activate() {
+,k8s-activate() {
 	local c="${1:-`pwd`/admin.conf}"
 	if [ ! -f "$c" ]; then
 		echo "$c does not exist"
@@ -113,17 +117,17 @@ k8s-activate() {
 	source <(helm completion zsh)
 }
 
-k8s-pod-node-name() {
+,k8s-pod-node-name() {
     kubectl get pod "$@" -ojson | jq -j '.spec.nodeName'
 }
 
-k8s-pod-containers() {
+,k8s-pod-containers() {
 	kubectl get pod "$@" -ojson | \
 		jq -r '.status.containerStatuses[] | .name + " @ " + .image'
 }
 
-k8s-pod-ls() { 
-	kubectl get pods "-o=custom-columns=Name:.metadata.name,Node:.spec.nodeName,Memory:.spec.containers[].resources.limits.memory,IP:.status.podIP,Status:.status.phase,Image:.spec.containers[].image" "$@" 
+,k8s-pod-ls() { 
+	kubectl get pods "-o=custom-columns=Name:.metadata.name,UID:.metadata.uid,Node:.spec.nodeName,Memory:.spec.containers[].resources.limits.memory,IP:.status.podIP,Status:.status.phase,Image:.spec.containers[].image" "$@" 
 }
 
 
@@ -133,14 +137,15 @@ k8s-pod-ls() {
 
 # https://djs55.github.io/jekyll/update/2017/11/27/docker-for-mac-disk-space.html
 # /Users/mg/Library/Containers/com.docker.docker/Data/vms/0
-docker-prune() {
+,docker-prune() {
     docker run --rm -it --privileged --pid=host walkerlee/nsenter -t 1 -m -u -i -n fstrim /var/lib/docker
 }
-docker-vm() {
+
+,docker-vm() {
     screen ~/Library/Containers/com.docker.docker/Data/com.docker.driver.amd64-linux/tty
 }
 
-docker-host() {
+,docker-host() {
     docker run --rm -it --privileged --pid=host debian nsenter -t 1 -m -u -n -i sh
 }
 
@@ -148,30 +153,39 @@ docker-host() {
 # osx:brew section
 #--------------------------------------------------------#--
 
-brew-greedy-numbers() {
+,brew-greedy-numbers() {
     brew outdated --greedy --json=v2 | \
         jq -r '.formulae + .casks | .[] | select(.current_version != "latest") | .name + ":" + .current_version'
 }
 
-brew-upgrade-greedy-numbers() {
+,brew-upgrade-greedy-numbers() {
+
+    filter=sed
+    [ "$1"x == "x" ] || filter="$1"
+
     brew outdated --greedy --json=v2 --formula | \
         jq -r '.formulae | .[] | select(.current_version != "latest") | .name' | \
+        $filter | \
         tee | \
         xargs brew upgrade --formula
     brew outdated --greedy --json=v2 --cask | \
         jq -r '.casks | .[] | select(.current_version != "latest") | .name' | \
+        filter | \
         tee | \
         xargs brew upgrade --casks
 }
 
+,brew-cleanup-all() {
+    brew cleanup --prune=all -s
+}
 
 #--------------------------------------------------------#--
 # cli graphics section
 #--------------------------------------------------------#--
 
-icat() { kitty +kitten icat --align=left "$@" }
-isvg() { rsvg-convert | icat "$@" }
-idot() { dot -Tsvg \
+,icat() { kitty +kitten icat --align=left "$@" }
+,isvg() { rsvg-convert | ,icat "$@" }
+,idot() { dot -Tsvg \
             -Gbgcolor=black \
             -Nbgcolor=black \
             -Ebgcolor=black \
@@ -180,11 +194,11 @@ idot() { dot -Tsvg \
             -Ecolor=white \
             -Gfontcolor=white \
             -Efontcolor=white \
-            -Nfontcolor=white |isvg }
+            -Nfontcolor=white | ,isvg }
 
-ipuml() { plantuml -Tsvg -p |isvg }
+,ipuml() { plantuml -Tsvg -p | ,isvg }
 
-ineato() { neato -Tsvg \
+,ineato() { neato -Tsvg \
             -Gbgcolor=black \
             -Nbgcolor=black \
             -Ebgcolor=black \
@@ -193,22 +207,22 @@ ineato() { neato -Tsvg \
             -Ecolor=white \
             -Gfontcolor=white \
             -Efontcolor=white \
-            -Nfontcolor=white |isvg }
+            -Nfontcolor=white | ,isvg }
 
 
 #--------------------------------------------------------#--
 # 1password
 #--------------------------------------------------------#--
 
-z_support_1password() {
-    op-fzf() {
+,support_1password() {
+    ,op-fzf() {
         op item list --no-color --long --iso-timestamps| \
             sed 1d| \
             fzf| \
             awk '{ print $1 }'
     }
 
-    op-fzfp() {
+    ,op-fzfp() {
         op item list --no-color --long --iso-timestamps| \
             sed 1d| \
             fzf --preview 'op item get {1}'| \
@@ -222,11 +236,11 @@ z_support_1password() {
 # everything else
 #--------------------------------------------------------#--
 
-jwt-decode() {
+,jwt-decode() {
     jq -R 'split(".") | .[1] | @base64d | fromjson'
 }
 
-epochz() { 
+,epochz() { 
     epoch -quiet -tz utc "$@"
 }
 
