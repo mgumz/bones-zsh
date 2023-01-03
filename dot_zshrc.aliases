@@ -14,10 +14,6 @@ alias ..='cd ..'
 ++() { pushd "$@" }
 compdef _cd ++
 
-xmv() {
-    xargs -J % mv % "$@"
-}
-
 man() {
     env \
         LESS_TERMCAP_mb=$(printf "\e[1;31m") \
@@ -30,7 +26,12 @@ man() {
         man "$@"
 }
 
-,scpresume() {
+,xmv() {
+    xargs -J % mv % "$@"
+}
+
+
+,scp-resume() {
     rsync --checksum --partial --progress --rsh=ssh "$@"
 }
 
@@ -38,7 +39,7 @@ man() {
     diff -abBpur "$@"
 }
 
-,diffstat() {
+,diff-stat() {
     awk 'BEGIN  { inserts=0; removals=0; } \
          /^\+/  { inserts++; } \
          /^-/   { removals++; } \
@@ -46,7 +47,7 @@ man() {
 }
 
 # check hosts that are online
-,whoisonline() {
+,who-is-online() {
 
     if ! whence -p nmap > /dev/null; then
         echo "nmap is not installed."
@@ -63,7 +64,7 @@ man() {
     z_success "done"
 }
 
-,list_zombies() {
+,list-zombies() {
     ps "$@" -xo pid,ppid,stat,command |awk '$3 == "Z"'
 }
 
@@ -85,19 +86,15 @@ man() {
 
 # alias z_fakename='nc koeln.ccc.de 23 | cut -d \  -f 4,5'
 
-,aesd() {
-    CMD="openssl enc -d -a -aes-256-ecb -salt"
-    [ $# -eq 0 ] || CMD="$CMD -in $1"
-    eval $CMD
+,aes-d() {
+    openssl enc -d -a -aes-256-ecb -salt "$@"
 }
 
-,aese() {
-    CMD="openssl enc -a -aes-256-ecb -salt"
-    [ $# -eq 0 ] || CMD="$CMD -in $1"
-    eval $CMD
+,aes-e() {
+    openssl enc -a -aes-256-ecb -salt "$@"
 }
 
-,showcert() {
+,show-cert() {
     openssl x509 -text -noout -in $1
 }
 
@@ -155,24 +152,27 @@ man() {
 
 ,brew-greedy-numbers() {
     brew outdated --greedy --json=v2 | \
-        jq -r '.formulae + .casks | .[] | select(.current_version != "latest") | .name + ":" + .current_version'
+        jq -r '.formulae + .casks 
+            | .[] 
+            | select(.current_version != "latest") 
+            | .name + ":" + .current_version'
 }
 
 ,brew-upgrade-greedy-numbers() {
 
-    filter=sed
-    [ "$1"x == "x" ] || filter="$1"
+    local jq_filter='.[] | select(.current_version != "latest") | .name'
+    local filter() { cat }
+    local args="$@"
 
-    brew outdated --greedy --json=v2 --formula | \
-        jq -r '.formulae | .[] | select(.current_version != "latest") | .name' | \
-        $filter | \
-        tee | \
-        xargs brew upgrade --formula
-    brew outdated --greedy --json=v2 --cask | \
-        jq -r '.casks | .[] | select(.current_version != "latest") | .name' | \
-        filter | \
-        tee | \
-        xargs brew upgrade --casks
+    [[ "$1"x == "x" ]] || local filter() { eval "$args" }
+
+    for i in formulae casks; do
+        brew outdated --greedy --json=v2 --$i | \
+            jq -r ".$i|$jq_filter" |\
+            filter | \
+            tee | \
+            xargs -t brew upgrade --$i
+    done
 }
 
 ,brew-cleanup-all() {
