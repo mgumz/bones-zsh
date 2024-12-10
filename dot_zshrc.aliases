@@ -60,11 +60,11 @@ man() {
     fi
 
     z_info "testing $1 for online boxes"
-    sudo nmap --system-dns -sP $1 | awk '/Host/ && /up/ { print $0; }'
+    sudo nmap -oG - --system-dns -sP $1 | awk '/Host/ && /Up/ { print $0; }'
     z_success "done"
 }
 
-,list-zombies() {
+,ls-zombies() {
     ps "$@" -xo pid,ppid,stat,command |awk '$3 == "Z"'
 }
 
@@ -127,6 +127,9 @@ man() {
 	kubectl get pods "-o=custom-columns=Name:.metadata.name,UID:.metadata.uid,Node:.spec.nodeName,Memory:.spec.containers[].resources.limits.memory,IP:.status.podIP,Status:.status.phase,Image:.spec.containers[].image" "$@" 
 }
 
+,k8s-pod-limits() {
+	kubectl get pods -ojson "$@" |jq -r '.items[]|[.metadata.name, (.spec.containers[]|[.name,":",.resources.requests.cpu,"/",.resources.limits.cpu,";",.resources.requests.memory,.resources.limits.memory]|join(",") ) ]|@tsv'
+}
 
 #--------------------------------------------------------#--
 # docker section
@@ -179,13 +182,25 @@ man() {
     brew cleanup --prune=all -s
 }
 
+,brew-list-installed() {
+    brew info --installed --json=v2 | \
+        jq -r '. | ( ( .formulae[]|.name+" "+([.installed[0].runtime_dependencies[]|.full_name]|sort|join(",") ) ), .casks[].token )'
+}
+
 #--------------------------------------------------------#--
 # cli graphics section
 #--------------------------------------------------------#--
 
-,icat() { kitty +kitten icat --align=left "$@" }
-,isvg() { rsvg-convert | ,icat "$@" }
-,idot() { dot -Tsvg \
+,icat() {
+    if [[ "$KITTY_PID"x != "x" ]]; then
+        kitty +kitten icat --align=left "$@"
+    else
+        wezterm imgcat "$@"
+    fi
+}
+,pdfcat() { magick convert -density 300 "$@" jpg:- | ,icat }
+,svgcat() { rsvg-convert | ,icat "$@" }
+,dotcat() { dot -Tsvg \
             -Gbgcolor=black \
             -Nbgcolor=black \
             -Ebgcolor=black \
@@ -194,11 +209,10 @@ man() {
             -Ecolor=white \
             -Gfontcolor=white \
             -Efontcolor=white \
-            -Nfontcolor=white | ,isvg }
+            -Nfontcolor=white | ,svgcat }
 
-,ipuml() { plantuml -Tsvg -p | ,isvg }
-
-,ineato() { neato -Tsvg \
+,pumlcat() { plantuml -Tsvg -p | ,svgcat }
+,neatocat() { neato -Tsvg \
             -Gbgcolor=black \
             -Nbgcolor=black \
             -Ebgcolor=black \
@@ -207,8 +221,7 @@ man() {
             -Ecolor=white \
             -Gfontcolor=white \
             -Efontcolor=white \
-            -Nfontcolor=white | ,isvg }
-
+            -Nfontcolor=white | ,svgcat }
 
 #--------------------------------------------------------#--
 # 1password
@@ -244,6 +257,33 @@ man() {
     epoch -quiet -tz utc "$@"
 }
 
-alias exa="exa --time-style=long-iso --git"
+,backup() {
+    local target=$1
+    shift
+    zsh ~/.config/restic/job-$target/job.sh "$@"
+}
+
+_backup_completion() {
+    compadd -- ${(f)"$(ls -d ~/.config/restic/job-* 2>/dev/null | xargs -n 1 basename | sed 's/^job-//')"}
+}
+compdef _backup_completion ,backup
+
+,ez() {
+    eza --time-style=long-iso --git "$@" 
+}
+
+,cal() {
+    ncal -A 2 -B 1
+}
+
+,mkdn() {
+    local d=$(date +"%Y-%m-%d--$@")
+    mkdir "$d" && echo "$d"
+}
+
+,qrtool() {
+    qrtool enc "$@" | ,icat
+}
+
 
 # vim:ft=zsh
