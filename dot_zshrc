@@ -100,14 +100,15 @@ zstyle ':completion:*' list-colors $LS_COLORS
 # prompt
 #--------------------------------------------------------#--
 
+# https://en.wikipedia.org/wiki/ANSI_escape_code
 coff=$reset_color
-cbg="${coff}${bg[black]}"
-croot=$fg_bold[red]
-cname=$fg_bold[green]
-cjobs=$fg_bold[yellow]
-cerror=$fg_bold[magenta]
-chost=$fg_bold[cyan]
-ctime=$fg_bold[cyan]
+cbg="${coff}${bg[color232]}"
+croot="$fg_bold[red]"
+cname="\e[38;5;208m"    # color208
+cjobs="\e[38;5;154m"    # color154 - lime
+cerror="\e[38;5;196m"   # color196 - taffy
+chost="\e[38;5;39m"     # color39  - tardis
+ctime="\e[38;5;222m"    # color222 - dirtyblonde
 
 # https://twitter.com/thingskatedid/status/1316081075043463170
 export PROMPT="%{%(!.$croot.$coff)%};%{$coff%} "
@@ -125,7 +126,7 @@ display_info() {
     fi
 
     _info+=" | %/"                                      # pwd
-    _info+=" | %D{%Y-%m-%d} W%D{%W} %*"                 # date-time
+    _info+=" | ${ctime}%D{%Y-%m-%d} W%D{%W} %*${cbg}"   # date-time
 
     local _GIT_INFO=$(git describe --all --long 2> /dev/null )
     if [ -n "$_GIT_INFO" ]; then
@@ -149,9 +150,12 @@ display_info_x() {
     local CMD=$1
     if [ "$1"x != "x" ]; then CMD="${CMD} | "; fi
     case "$TERM" in
-        *xterm*|*rxvt*) echo -en "\e]2;${CMD}$PPID <$USERNAME@$HOST>: ${PWD}\a";;
-        screen) [ -n $DISPLAY ] && echo -en "\e]2;${CMD}$PPID <$USERNAME@$HOST>: ${PWD}\a"
-        ;;
+        *xterm*|*rxvt*) 
+            echo -en "\e]2;${CMD}$PPID <$USERNAME@$HOST>: ${PWD}\a"
+            ;;
+        screen|tmux*)
+            [ -n $DISPLAY ] && echo -en "\e]2;${CMD}$PPID <$USERNAME@$HOST>: ${PWD}\a"
+            ;;
     esac
 }
 
@@ -174,7 +178,7 @@ precmd() {
 preexec() {
     local CMD=$1
     case "$TERM" in
-    *xterm*|screen*)
+    *xterm*|screen*|tmux*)
         case "$CMD" in
             *\033]0*) ;;
             *) display_info_x $CMD ;;
