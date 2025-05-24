@@ -146,23 +146,16 @@ display_info() {
     print -P "$_info%E"
 }
 
-display_info_x() {
+display_info_termtitle() {
     local CMD=$1
-    if [ "$1"x != "x" ]; then CMD="${CMD} | "; fi
-    case "$TERM" in
-        *xterm*|*rxvt*) 
-            echo -en "\e]2;${CMD}$PPID <$USERNAME@$HOST>: ${PWD}\a"
-            ;;
-        screen|tmux*)
-            [ -n $DISPLAY ] && echo -en "\e]2;${CMD}$PPID <$USERNAME@$HOST>: ${PWD}\a"
-            ;;
-    esac
+    [[ -z $1 ]] || CMD="${CMD} | "
+    echo -en "\e]2;${CMD}$PPID <$USERNAME@$HOST>: ${PWD}\a"
 }
 
 
 display_info_full() {
     display_info $@
-    display_info_x
+    display_info_termtitle
 }
 
 chpwd() {
@@ -172,7 +165,7 @@ chpwd() {
 
 precmd() {
     local E=$?
-    [ $E -eq 0 ] || display_info $E
+    [[ $E -eq 0 ]] || display_info $E
 }
 
 preexec() {
@@ -180,8 +173,11 @@ preexec() {
     case "$TERM" in
     *xterm*|screen*|tmux*)
         case "$CMD" in
-            *\033]0*) ;;
-            *) display_info_x $CMD ;;
+            *\033]0*)
+                ;;
+            *) 
+                display_info_termtitle $CMD
+                ;;
         esac
         ;;
     *)
@@ -191,8 +187,6 @@ preexec() {
 
 
 di() { display_info_full $? }
-
-display_info_x
 
 #--------------------------------------------------------#--
 # keymapping
@@ -223,5 +217,6 @@ done
 ## not in .zlogin coz display_info is used only for interactive
 ## sessions
 display_info
+display_info_termtitle
 
 # vim:nowrap:ft=zsh
