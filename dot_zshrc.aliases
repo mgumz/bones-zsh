@@ -269,7 +269,7 @@ _backup_completion() {
 compdef _backup_completion ,backup
 
 ,ez() {
-    eza --time-style=long-iso --git "$@" 
+    eza --color=always --time-style=long-iso --git "$@" 
 }
 
 ,cal() {

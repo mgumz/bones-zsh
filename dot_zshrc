@@ -148,7 +148,19 @@ display_info() {
 
 display_info_termtitle() {
     local CMD=$1
-    [[ -z $1 ]] || CMD="${CMD} | "
+    # HIST_IGNORE_SPACE prevents commands with space in front
+    # from entering the history. kind of "private". so, there
+    # is also no need to show-case them in the title of terminals
+    # which may up in other tools
+    if [[ "$CMD" =~ ^[[:space:]]+ ]]; then
+        CMD=""
+    fi
+
+    #
+    [[ -z "$CMD" ]] || CMD="${CMD} | "
+
+    # print the executed command etc etc to the title of the
+    # terminal
     echo -en "\e]2;${CMD}$PPID <$USERNAME@$HOST>: ${PWD}\a"
 }
 
@@ -165,7 +177,8 @@ chpwd() {
 
 precmd() {
     local E=$?
-    [[ $E -eq 0 ]] || display_info $E
+    # 130 is ctrl-c on an empty session
+    [[ $E -eq 0 || $E -eq 130 ]] || display_info $E
 }
 
 preexec() {
